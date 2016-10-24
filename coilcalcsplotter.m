@@ -1,5 +1,7 @@
 function [OFeasible] = coilcalcsplotter(matnum,gauge,time,turns,numcoils)
 
+% ENTER SAFETY PARAMS
+
 Oall = coilcalcsiteration;
 
 imA = all(Oall(:,2) == matnum,2); %Material set
@@ -23,17 +25,17 @@ for omegaPC = 1:7;
         prcntCW = OFeasibleW(:,8);
         
         %Outputs CONSTANT OMEGA
-        powerW = OFeasibleW(:,12);
-        massW = OFeasibleW(:,13);
+        powerW = OFeasibleW(:,15) + 2*OFeasibleW(:,14);
+        massW = OFeasibleW(:,17) + 2*OFeasibleW(:,16);
         
         figure
         plot3(acW,prcntCW,powerW,'o');
-        xlabel('G'); ylabel('Prcnt C'); zlabel('Power');
+        xlabel('G'); ylabel('Prcnt C'); zlabel('TOTAL Power');
         title(['OMEGA=' num2str(omegaPC) ', Mat=' num2str(matnum) ', Gauge=' num2str(gauge) ', Time=' num2str(time) ', Turns=' num2str(turns) ', Num Coils =' num2str(numcoils) '']);
         
         figure
         plot3(acW,prcntCW,massW,'o');
-        xlabel('G'); ylabel('Prcnt C'); zlabel('Mass');
+        xlabel('G'); ylabel('Prcnt C'); zlabel('TOTAL Mass');
         title(['OMEGA=' num2str(omegaPC) ', Mat=' num2str(matnum) ', Gauge=' num2str(gauge) ', Time=' num2str(time) ', Turns=' num2str(turns) ', Num Coils =' num2str(numcoils) '']);
     end
 end
@@ -52,17 +54,17 @@ for ipc = 1:5;
         omegaPC = OFeasiblePC(:,5);
         
         %Outputs CONSTANT PRCNT C
-        powerPC = OFeasiblePC(:,12);
-        massPC = OFeasiblePC(:,13);
+        powerPC = OFeasiblePC(:,15) + 2*OFeasiblePC(:,14);
+        massPC = OFeasiblePC(:,17) + 2*OFeasiblePC(:,16);
         
         figure
         plot3(acPC,omegaPC,powerPC,'o');
-        xlabel('G'); ylabel('Omega'); zlabel('Power');
+        xlabel('G'); ylabel('Omega'); zlabel('TOTAL Power');
         title(['PRCNT C=' num2str(prcntC) ', Mat=' num2str(matnum) ', Gauge=' num2str(gauge) ', Time=' num2str(time) ', Turns=' num2str(turns) ', Num Coils =' num2str(numcoils) '']);
         
         figure
         plot3(acPC,omegaPC,massPC,'o');
-        xlabel('G'); ylabel('Omega'); zlabel('Mass');
+        xlabel('G'); ylabel('Omega'); zlabel('TOTAL Mass');
         title(['PRCNT C=' num2str(prcntC) ', Mat=' num2str(matnum) ', Gauge=' num2str(gauge) ', Time=' num2str(time) ', Turns=' num2str(turns) ', Num Coils =' num2str(numcoils) '']);
     end
 end

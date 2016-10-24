@@ -1,4 +1,4 @@
-function [radius,current,power,mass] = ...
+function [radius,torque,currentEnd,currentCenter,powerEnd,powerCenter,massEnd,massCenter] = ...
     coilcalcs(acceleration,w,time,turns,numcoils,material,gauge,prcntC,prcntT)
 %disp(' ');
 %%
@@ -97,6 +97,7 @@ w = w*0.1047; %rpm to rad/s
 radius = acceleration/w^2; %m
 %disp(['Tether Radius: ',num2str(radius),' meters']);
 
+%Undeployed tether (CALC SLIGHTLY MODED)
 if prcntT == 0;
     lend = (prcntC/100)*l;
     lcenter = 3*l - 2*lend;
@@ -109,33 +110,47 @@ if prcntT == 0;
     time = time*60*60;
     torque = Itotal*w/time;
     
+% Deployed tether (IMPORTANT STATE)
 else
     R = (prcntT/100)*radius;
-    lend = (prcntC/100)*l;
-    lcenter = 3*l - 2*lend;
-    mend = (prcntC/100)*m;
-    mcenter = 3*m - 2*mend;
-    Iend = (mend/12)*(l^2+lend^2);
-    Iteth = (m/4)*R*R/3;
-    Icenter = (1/2)*(mcenter/12)*(l^2+lcenter^2);
-    Itotal = 2*(Iend + mend*R*R + Iteth + Icenter);
+    lend = (prcntC/100)*l; % end sat size
+    lcenter = 3*l - 2*lend; % center sat size
+    mend = (prcntC/100)*m; % end mass
+    mcenter = 3*m - 2*mend; % center mass
+    Iend = (mend/12)*(l^2+lend^2); % moment of inertia end (box)
+    Iteth = (m/4)*R*R/3; %moment of inertia tether (cyclinder)
+    Icenter = (1/2)*(mcenter/12)*(l^2+lcenter^2); % moment of inertia center (box)
+    Itotal = 2*(Iend + mend*R*R + Iteth + Icenter); %total moment of inertia (parallel axis)
     time = time*60*60;
-    torque = Itotal*w/time;
+    torque = Itotal*w/time; %Torque
 end
 
-Aend = lend*l; %m^2
-Acenter = lcenter*l;
-current = torque/(turns*numcoils*B*(Aend+Aend+Acenter));
+% Aface = l*l; %m^2
+Aend = lend*l; % Area of end sat side
+Acenter = lcenter*l; % Area of center sat side
+
+currentEnd = (torque/2)/(turns*numcoils*B*(Aend));
+% current at the end if half the torque needed (since 2 end sats)
+currentCenter = torque/(turns*numcoils*B*(Acenter));
+% current at center if all the torque is needed
+
 %disp(['Needed current: ',num2str(current),' Amperes']);
 
-length = turns*numcoils*(2*lend+2*lcenter+4*l); % meters
-resis = p*length/Ac;
+lengthEnd = turns*numcoils*(4*lend+4*l+4*l); % length of coil wire in end (meters)
+lengthCenter = turns*numcoils*(4*lcenter+4*l+4*l); %length of coil wire in center (meters)
 
-voltage = current*resis;
-power = voltage*current;
+resisEnd = p*lengthEnd/Ac; % resistance in end
+resisCenter = p*lengthCenter/Ac; % resistance in center
+
+voltageEnd = currentEnd*resisEnd; %voltage needed at end
+powerEnd = voltageEnd*currentEnd; %power draw at end
+
+voltageCenter = currentCenter*resisCenter; %voltage needed in center
+powerCenter = voltageCenter*currentCenter; %power draw at center
 %disp(['Power draw: ',num2str(power),' Watts']);
 
-mass = length*Ac*Density;
+massEnd = lengthEnd*Ac*Density; %mass of end sat coils
+massCenter = lengthCenter*Ac*Density; %mass of center sat coils
 %disp(['Coil mass: ',num2str(mass),' kg']);
 
 %disp(' ');

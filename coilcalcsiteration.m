@@ -1,22 +1,30 @@
 function Oall = coilcalcsiteration
 
-clear; clc; close all;
+% NEED TO ITERATE BETTER
+% Change enumeration
 
-[OUTPUTS] = zeros((10*6*8*6*7*6*4*5*2),13);
+clear; clc; close all;
 
 Materials = {'Cu', 'Al7050', 'Al7178', 'NiCh', 'Nb', 'Ni'};
 [Gauges] = [20, 22, 24, 26, 28, 30, 35, 40];
 
 %tic;
+[OUTPUTS] = zeros((10*6*8*6*7*6*4*5*2),17);
 
 for ia = 1:10;
-    acceleration = (0.025*ia)+0.13;
+    gmin = 0.18;
+    gmax = 0.38;
+    AccelSpan = linspace(gmin,gmax,10);
+    acceleration = AccelSpan(ia);
     for im = 1:6;
         material = Materials(im);
         for ig = 1:8;
             gauge = Gauges(ig);
             for iti = 1:6;
-                time = 4*iti;
+                Days = 3;
+                Hours = Days*24;
+                TimeSpan = linspace(0,Hours,6);
+                time = TimeSpan(iti);
                 for iw = 1:7;
                     w = iw;
                     for itu = 1:6;
@@ -40,13 +48,16 @@ for ia = 1:10;
                                     
                                     i = x+y+z+a+b+c+d+e+f;
                                     
-                                    [radius,current,power,mass] = ...
+                                    [radius,torque,currentEnd,currentCenter,...
+                                        powerEnd,powerCenter,massEnd,massCenter] = ...
                                         coilcalcs(acceleration,w,time,turns,numcoils,...
                                         material,gauge,prcntC,prcntT);
 
                                         [OUTPUTS(i,:)] = [acceleration,im,...
                                         gauge,time,w,turns,numcoils,prcntC,...
-                                        prcntT,radius,current,power,mass];
+                                        prcntT,radius,torque,currentEnd,...
+                                        currentCenter,powerEnd,powerCenter,...
+                                        massEnd,massCenter];
                                 end
                             end
                         end
@@ -58,19 +69,37 @@ for ia = 1:10;
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,13) > 0.867 %Mass
+    if OUTPUTS(i,17) > 0.5 %Mass Center
         [OUTPUTS(i,:)] = 0;
     end
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,12) > 3 %Power
+    if OUTPUTS(i,16) > 0.125 %Mass End
         [OUTPUTS(i,:)] = 0;
     end
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,11) > 0.25 %Current
+    if OUTPUTS(i,15) > 3 %Power Center
+        [OUTPUTS(i,:)] = 0;
+    end
+end
+
+for i = 1:length(OUTPUTS);
+    if OUTPUTS(i,14) > 3 %Power End
+        [OUTPUTS(i,:)] = 0;
+    end
+end
+
+for i = 1:length(OUTPUTS);
+    if OUTPUTS(i,13) > 0.25 %Current Center
+        [OUTPUTS(i,:)] = 0;
+    end
+end
+
+for i = 1:length(OUTPUTS);
+    if OUTPUTS(i,12) > 0.25 %Current End
         [OUTPUTS(i,:)] = 0;
     end
 end
