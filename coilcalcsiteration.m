@@ -8,22 +8,27 @@ clear; clc; close all;
 Materials = {'Cu', 'Al7050', 'Al7178', 'NiCh', 'Nb', 'Ni'};
 [Gauges] = [20, 22, 24, 26, 28, 30, 35, 40];
 
-%tic;
-[OUTPUTS] = zeros((10*6*8*6*7*6*4*5*2),17);
+gmin = 0.1; %Set min g to achieve
+gmax = 0.2; %Set max g to achieve
+gIterations = 10; %Set number of steps between min and max g
+AccelSpan = linspace(gmin,gmax,gIterations);
 
-for ia = 1:10;
-    gmin = 0.18;
-    gmax = 0.38;
-    AccelSpan = linspace(gmin,gmax,10);
+Days = 3; %Days to spin up
+HoursPerIterate = 4; %Iteration window (iterate per H hours)
+Hours = Days*24;
+timeIterations = Hours/HoursPerIterate; %Iteration steps
+TimeSpan = linspace(0,Hours,timeIterations);
+
+[OUTPUTS] = zeros((gIterations*6*8*timeIterations*7*6*4*5*2),17);
+
+%tic;
+for ia = 1:gIterations;
     acceleration = AccelSpan(ia);
     for im = 1:6;
         material = Materials(im);
         for ig = 1:8;
             gauge = Gauges(ig);
-            for iti = 1:6;
-                Days = 3;
-                Hours = Days*24;
-                TimeSpan = linspace(0,Hours,6);
+            for iti = 1:timeIterations;
                 time = TimeSpan(iti);
                 for iw = 1:7;
                     w = iw;
@@ -52,8 +57,8 @@ for ia = 1:10;
                                         powerEnd,powerCenter,massEnd,massCenter] = ...
                                         coilcalcs(acceleration,w,time,turns,numcoils,...
                                         material,gauge,prcntC,prcntT);
-
-                                        [OUTPUTS(i,:)] = [acceleration,im,...
+                                    
+                                    [OUTPUTS(i,:)] = [acceleration,im,...
                                         gauge,time,w,turns,numcoils,prcntC,...
                                         prcntT,radius,torque,currentEnd,...
                                         currentCenter,powerEnd,powerCenter,...
@@ -69,13 +74,13 @@ for ia = 1:10;
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,17) > 0.5 %Mass Center
+    if OUTPUTS(i,17) > 0.865 %Mass Center
         [OUTPUTS(i,:)] = 0;
     end
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,16) > 0.125 %Mass End
+    if OUTPUTS(i,16) > 0.865 %Mass End
         [OUTPUTS(i,:)] = 0;
     end
 end

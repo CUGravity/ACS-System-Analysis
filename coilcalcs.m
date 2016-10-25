@@ -97,7 +97,7 @@ w = w*0.1047; %rpm to rad/s
 radius = acceleration/w^2; %m
 %disp(['Tether Radius: ',num2str(radius),' meters']);
 
-%Undeployed tether (CALC SLIGHTLY MODED)
+%Undeployed tether (NOT IMPORTANT STATE)-(CALC SLIGHTLY MODED)
 if prcntT == 0;
     lend = (prcntC/100)*l;
     lcenter = 3*l - 2*lend;
