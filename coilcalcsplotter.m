@@ -25,8 +25,8 @@ for omegaPC = 1:7;
         prcntCW = OFeasibleW(:,8);
         
         %Outputs CONSTANT OMEGA
-        powerW = OFeasibleW(:,15) + 2*OFeasibleW(:,14);
-        massW = OFeasibleW(:,17) + 2*OFeasibleW(:,16);
+        powerW = OFeasibleW(:,14) + 2*OFeasibleW(:,13);
+        massW = OFeasibleW(:,16) + 2*OFeasibleW(:,15);
         
         figure
         plot3(acW,prcntCW,powerW,'o');
@@ -54,8 +54,8 @@ for ipc = 1:5;
         omegaPC = OFeasiblePC(:,5);
         
         %Outputs CONSTANT PRCNT C
-        powerPC = OFeasiblePC(:,15) + 2*OFeasiblePC(:,14);
-        massPC = OFeasiblePC(:,17) + 2*OFeasiblePC(:,16);
+        powerPC = OFeasiblePC(:,14) + 2*OFeasiblePC(:,13);
+        massPC = OFeasiblePC(:,16) + 2*OFeasiblePC(:,15);
         
         figure
         plot3(acPC,omegaPC,powerPC,'o');

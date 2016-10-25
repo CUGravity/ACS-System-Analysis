@@ -1,4 +1,4 @@
-function [radius,torque,currentEnd,currentCenter,powerEnd,powerCenter,massEnd,massCenter] = ...
+function [radius,torque,current,powerEnd,powerCenter,massEnd,massCenter] = ...
     coilcalcs(acceleration,w,time,turns,numcoils,material,gauge,prcntC,prcntT)
 %disp(' ');
 %%
@@ -129,10 +129,8 @@ end
 Aend = lend*l; % Area of end sat side
 Acenter = lcenter*l; % Area of center sat side
 
-currentEnd = (torque/2)/(turns*numcoils*B*(Aend));
-% current at the end if half the torque needed (since 2 end sats)
-currentCenter = torque/(turns*numcoils*B*(Acenter));
-% current at center if all the torque is needed
+current = torque/(turns*numcoils*B*(Acenter+Aend+Aend));
+% current needed for torque with all three coils in mag field
 
 %disp(['Needed current: ',num2str(current),' Amperes']);
 
@@ -142,11 +140,11 @@ lengthCenter = turns*numcoils*(4*lcenter+4*l+4*l); %length of coil wire in cente
 resisEnd = p*lengthEnd/Ac; % resistance in end
 resisCenter = p*lengthCenter/Ac; % resistance in center
 
-voltageEnd = currentEnd*resisEnd; %voltage needed at end
-powerEnd = voltageEnd*currentEnd; %power draw at end
+voltageEnd = current*resisEnd; %voltage needed at end
+powerEnd = voltageEnd*current; %power draw at end
 
-voltageCenter = currentCenter*resisCenter; %voltage needed in center
-powerCenter = voltageCenter*currentCenter; %power draw at center
+voltageCenter = current*resisCenter; %voltage needed in center
+powerCenter = voltageCenter*current; %power draw at center
 %disp(['Power draw: ',num2str(power),' Watts']);
 
 massEnd = lengthEnd*Ac*Density; %mass of end sat coils

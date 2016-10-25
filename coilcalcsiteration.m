@@ -1,15 +1,12 @@
 function Oall = coilcalcsiteration
 
-% NEED TO ITERATE BETTER
-% Change enumeration
-
 clear; clc; close all;
 
 Materials = {'Cu', 'Al7050', 'Al7178', 'NiCh', 'Nb', 'Ni'};
 [Gauges] = [20, 22, 24, 26, 28, 30, 35, 40];
 
-gmin = 0.1; %Set min g to achieve
-gmax = 0.2; %Set max g to achieve
+gmin = 0.17; %Set min g to achieve
+gmax = 0.22; %Set max g to achieve
 gIterations = 10; %Set number of steps between min and max g
 AccelSpan = linspace(gmin,gmax,gIterations);
 
@@ -19,9 +16,10 @@ Hours = Days*24;
 timeIterations = Hours/HoursPerIterate; %Iteration steps
 TimeSpan = linspace(0,Hours,timeIterations);
 
-[OUTPUTS] = zeros((gIterations*6*8*timeIterations*7*6*4*5*2),17);
+[OUTPUTS] = zeros((gIterations*6*8*timeIterations*7*6*4*5*2),16);
 
 %tic;
+i = 1;
 for ia = 1:gIterations;
     acceleration = AccelSpan(ia);
     for im = 1:6;
@@ -41,28 +39,18 @@ for ia = 1:gIterations;
                                 for ipt = 1:2;
                                     prcntT = 100*(ipt-1);
                                     
-                                    x = 6*8*6*7*6*4*5*2*(ia-1);
-                                    y = 8*6*7*6*4*5*2*(im-1);
-                                    z = 6*7*6*4*5*2*(ig-1);
-                                    a = 7*6*4*5*2*(iti-1);
-                                    b = 6*4*5*2*(iw-1);
-                                    c = 4*5*2*(itu-1);
-                                    d = 5*2*(in-1);
-                                    e = 2*(ipc-1);
-                                    f = ipt;
-                                    
-                                    i = x+y+z+a+b+c+d+e+f;
-                                    
-                                    [radius,torque,currentEnd,currentCenter,...
+                                    [radius,torque,current,...
                                         powerEnd,powerCenter,massEnd,massCenter] = ...
                                         coilcalcs(acceleration,w,time,turns,numcoils,...
                                         material,gauge,prcntC,prcntT);
                                     
                                     [OUTPUTS(i,:)] = [acceleration,im,...
                                         gauge,time,w,turns,numcoils,prcntC,...
-                                        prcntT,radius,torque,currentEnd,...
-                                        currentCenter,powerEnd,powerCenter,...
+                                        prcntT,radius,torque,current,...
+                                        powerEnd,powerCenter,...
                                         massEnd,massCenter];
+                                    
+                                    i = i+1;
                                 end
                             end
                         end
@@ -74,37 +62,31 @@ for ia = 1:gIterations;
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,17) > 0.865 %Mass Center
+    if OUTPUTS(i,16) > 0.865 %Mass Center cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,16) > 0.865 %Mass End
+    if OUTPUTS(i,15) > 0.865 %Mass End cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,15) > 3 %Power Center
+    if OUTPUTS(i,14) > 3 %Power Center cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,14) > 3 %Power End
+    if OUTPUTS(i,13) > 3 %Power End cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,13) > 0.25 %Current Center
-        [OUTPUTS(i,:)] = 0;
-    end
-end
-
-for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,12) > 0.25 %Current End
+    if OUTPUTS(i,12) > 0.25 %Current cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
