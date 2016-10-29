@@ -1,5 +1,5 @@
 function [radius,torque,current,powerEnd,powerCenter,massEnd,massCenter] = ...
-    coilcalcs(acceleration,w,time,turns,numcoils,material,gauge,prcntC,prcntT)
+    coilcalcs(acceleration,w,time,turns,numcoils,material,gauge,prcntC,prcntT,sf)
 %disp(' ');
 %%
 %disp(' ----- Inputs ----- ');
@@ -124,6 +124,9 @@ else
     time = time*60*60;
     torque = Itotal*w/time; %Torque
 end
+
+%Safety factor on torque
+torque = torque*sf;
 
 % Aface = l*l; %m^2
 Aend = lend*l; % Area of end sat side

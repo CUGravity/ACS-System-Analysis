@@ -1,7 +1,5 @@
 function [OFeasible] = coilcalcsplotter(matnum,gauge,time,turns,numcoils)
 
-% ENTER SAFETY PARAMS
-
 Oall = coilcalcsiteration;
 
 imA = all(Oall(:,2) == matnum,2); %Material set

@@ -4,19 +4,24 @@ clear; clc; close all;
 
 Materials = {'Cu', 'Al7050', 'Al7178', 'NiCh', 'Nb', 'Ni'};
 [Gauges] = [20, 22, 24, 26, 28, 30, 35, 40];
+sf = 1.2;
 
-gmin = 0.17; %Set min g to achieve
-gmax = 0.22; %Set max g to achieve
-gIterations = 10; %Set number of steps between min and max g
+gmin = 0.38; %Set min g to achieve
+gmax = 0.38; %Set max g to achieve
+gIterations = 1; %Set number of steps between min and max g
 AccelSpan = linspace(gmin,gmax,gIterations);
 
-Days = 3; %Days to spin up
-HoursPerIterate = 4; %Iteration window (iterate per H hours)
-Hours = Days*24;
-timeIterations = Hours/HoursPerIterate; %Iteration steps
-TimeSpan = linspace(0,Hours,timeIterations);
+TminDays = 3; %Set min time for spin up to achieve
+TmaxDays = 7; %Set max time for spin up to achieve
+TimeIterations = 10; %Set number of steps between min and max time
+TimeSpan = linspace(TminDays*24,TmaxDays*24,TimeIterations);
 
-[OUTPUTS] = zeros((gIterations*6*8*timeIterations*7*6*4*5*2),16);
+wmin = 1; %Set min w to achieve
+wmax = 10; %Set max w to achieve
+wIterations = 10; %Set number of steps between min and max w
+wSpan = linspace(wmin,wmax,wIterations);
+
+[OUTPUTS] = zeros((gIterations*6*8*TimeIterations*wIterations*6*4*5*2),16);
 
 %tic;
 i = 1;
@@ -26,10 +31,10 @@ for ia = 1:gIterations;
         material = Materials(im);
         for ig = 1:8;
             gauge = Gauges(ig);
-            for iti = 1:timeIterations;
+            for iti = 1:TimeIterations;
                 time = TimeSpan(iti);
-                for iw = 1:7;
-                    w = iw;
+                for iw = 1:wIterations;
+                    w = wSpan(iw);
                     for itu = 1:6;
                         turns = itu*50;
                         for in = 1:4;
@@ -42,7 +47,7 @@ for ia = 1:gIterations;
                                     [radius,torque,current,...
                                         powerEnd,powerCenter,massEnd,massCenter] = ...
                                         coilcalcs(acceleration,w,time,turns,numcoils,...
-                                        material,gauge,prcntC,prcntT);
+                                        material,gauge,prcntC,prcntT,sf);
                                     
                                     [OUTPUTS(i,:)] = [acceleration,im,...
                                         gauge,time,w,turns,numcoils,prcntC,...
@@ -68,7 +73,7 @@ for i = 1:length(OUTPUTS);
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,15) > 0.865 %Mass End cutoff
+    if OUTPUTS(i,15) > 0.16 %Mass End cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
