@@ -1,4 +1,4 @@
-function [radius,torque,current,powerEnd,powerCenter,massEnd,massCenter] = ...
+function [radius,torque,current,powerEnd,powerCenter,massEnd,massCenter,massTotal,MinCost] = ...
     coilcalcs(acceleration,w,time,turns,numcoils,material,gauge,prcntC,prcntT,sf)
 %disp(' ');
 %%
@@ -18,33 +18,62 @@ B = 0.5e-4; % tesla
 if strcmp('Cu',material)
     p = 1.68e-8; % Ohm m (copper)
     Density = 8960; % kg/m^3 density of copper
+    MinCostPerPound = 2.17; %Cost
+    MinCostPerkg = MinCostPerPound*0.4536;
+
 elseif strcmp('Au',material) %Gold
     p = 2.44e-8;
     Density = 19300;
+    %MinCostPerPound = ;
+    MinCostPerkg = 41024.83;
+
 elseif strcmp('Ag',material) %Silver
     p = 1.59e-8;
     Density = 10490;
+    %MinCostPerPound = ;
+    MinCostPerkg = 570.90;
+
 elseif strcmp('Al7050',material) %Aluminum 7050
     p = 2.82e-8;
     Density = 2800;
+    MinCostPerPound = 0.76;
+    MinCostPerkg = MinCostPerPound*0.4536;
+
 elseif strcmp('Al7178',material) %Aluminum 7178
     p = 2.82e-8;
     Density = 2830;
+    MinCostPerPound = 0.76;
+    MinCostPerkg = MinCostPerPound*0.4536;
+
 elseif strcmp('NiCh',material) %Nickel-Chrome
     p = 1.1e-6;
     Density = 8400;
+    MinCostPerPound = 4.50;
+    MinCostPerkg = MinCostPerPound*0.4536;
+
 elseif strcmp('Nb',material) %Niobium
     p = 1.52e-8;
     Density = 8570;
+    %MinCostPerPound = ;
+    MinCostPerkg = 180;
+
 elseif strcmp('Ta',material) %Tantalum
     p = 1.31e-8;
     Density = 16690;
+    %MinCostPerPound = 2.17;
+    MinCostPerkg = 150;
+
 elseif strcmp('Ni',material) %Nickel
     p = 6.93e-8;
     Density = 8908;
+    MinCostPerPound = 4.66;
+    MinCostPerkg = MinCostPerPound*0.4536;
+
 else % default
     p = 1.68e-8; % Ohm m (copper)
     Density = 8960; % kg/m^3 density of copper
+    MinCostPerPound = 2.17;
+    MinCostPerkg = MinCostPerPound*0.4536;
 end
 
 %GUAGES
@@ -132,8 +161,8 @@ torque = torque*sf;
 Aend = lend*l; % Area of end sat side
 Acenter = lcenter*l; % Area of center sat side
 
-current = torque/(turns*numcoils*B*(Acenter+Aend+Aend));
 % current needed for torque with all three coils in mag field
+current = torque/(turns*numcoils*B*(Acenter+Aend+Aend));
 
 %disp(['Needed current: ',num2str(current),' Amperes']);
 
@@ -152,6 +181,9 @@ powerCenter = voltageCenter*current; %power draw at center
 
 massEnd = lengthEnd*Ac*Density; %mass of end sat coils
 massCenter = lengthCenter*Ac*Density; %mass of center sat coils
+
+massTotal = 2*massEnd + massCenter;
+MinCost = massTotal*MinCostPerkg;
 %disp(['Coil mass: ',num2str(mass),' kg']);
 
 %disp(' ');
