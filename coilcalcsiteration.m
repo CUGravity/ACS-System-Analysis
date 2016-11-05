@@ -22,26 +22,26 @@ wmax = 10; %Set max w to achieve
 wIterations = 10; %Set number of steps between min and max w
 wSpan = linspace(wmin,wmax,wIterations);
 
-[OUTPUTS] = zeros((gIterations*6*8*TimeIterations*wIterations*6*4*5*2),18);
+[OUTPUTS] = zeros((gIterations*6*8*TimeIterations*wIterations*6*2*5*2),18);
 
 %% Enumeration/Iterations
 
 i = 1;
-for ia = 1:gIterations;
+for ia = 1:gIterations; % iterate over accelerations
     acceleration = AccelSpan(ia);
-    for im = 1:6;
+    for im = 1:6; % iterate over materials
         material = Materials(im);
-        for ig = 1:8;
+        for ig = 1:8; % iterate over gauges
             gauge = Gauges(ig);
-            for iti = 1:TimeIterations;
+            for iti = 1:TimeIterations; % iterate over spin up times
                 time = TimeSpan(iti);
-                for iw = 1:wIterations;
+                for iw = 1:wIterations; % iterate over w
                     w = wSpan(iw);
-                    for itu = 1:6;
+                    for itu = 1:6; % iterate over number of turns
                         turns = itu*50;
-                        for in = 1:4;
+                        for in = 1:2; % iterate over number of coils
                             numcoils = in;
-                            for ipc = 1:5;
+                            for ipc = 1:5; % iterate over percent C
                                 prcntC = 20*(ipc);
                                 for ipt = 1:2;
                                     prcntT = 100*(ipt-1);

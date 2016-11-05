@@ -134,7 +134,7 @@ if prcntT == 0;
     mend = (prcntC/100)*m;
     mcenter = 3*m - 2*mend;
     Iend = (mend/12)*(l^2+lend^2);
-    Icenter = (1/2)*(mcenter/12)*(l^2+lcenter^2);
+    Icenter = (1/2)*(mcenter/12)*(l^2+(lcenter/2)^2);
     Itotal = 2*(Iend + mend*R*R + Icenter);
     time = time*60*60;
     torque = Itotal*w/time;
@@ -145,9 +145,10 @@ else
     lend = (prcntC/100)*l; % end sat size
     lcenter = 3*l - 2*lend; % center sat size
     mend = (prcntC/100)*m; % end mass
-    mcenter = 3*m - 2*mend; % center mass
+    mtether = m/4; %tether mass
+    mcenter = 3*m - 2*mend - 2*mtether; % center mass
     Iend = (mend/12)*(l^2+lend^2); % moment of inertia end (box)
-    Iteth = (m/4)*R*R/3; %moment of inertia tether (cyclinder)
+    Iteth = (mtether)*R*R/3; %moment of inertia tether (cyclinder)
     Icenter = (1/2)*(mcenter/12)*(l^2+lcenter^2); % moment of inertia center (box)
     Itotal = 2*(Iend + mend*R*R + Iteth + Icenter); %total moment of inertia (parallel axis)
     time = time*60*60;
@@ -155,19 +156,19 @@ else
 end
 
 %Safety factor on torque
-torque = torque*sf;
+torquesf = torque*sf;
 
 % Aface = l*l; %m^2
 Aend = lend*l; % Area of end sat side
 Acenter = lcenter*l; % Area of center sat side
 
 % current needed for torque with all three coils in mag field
-current = torque/(turns*numcoils*B*(Acenter+Aend+Aend));
+current = torquesf/(turns*numcoils*B*(Acenter+Aend+Aend));
 
 %disp(['Needed current: ',num2str(current),' Amperes']);
 
-lengthEnd = turns*numcoils*(4*lend+4*l+4*l); % length of coil wire in end (meters)
-lengthCenter = turns*numcoils*(4*lcenter+4*l+4*l); %length of coil wire in center (meters)
+lengthEnd = turns*numcoils*(2*lend+2*l); % length of coil wire in end (meters)
+lengthCenter = turns*numcoils*(2*lcenter+2*l); %length of coil wire in center (meters)
 
 resisEnd = p*lengthEnd/Ac; % resistance in end
 resisCenter = p*lengthCenter/Ac; % resistance in center
