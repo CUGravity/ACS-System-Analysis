@@ -13,7 +13,7 @@ function [radius,torque,current,voltageEnd,powerEnd,voltageCenter,powerCenter,..
 %KNOWN CONST
 l = 0.1; %m
 m = 1.33; %kg
-B = 0.5e-4; % tesla
+B = 0.3e-4; % tesla
 
 %MATERIALS
 if strcmp('Cu',material)
