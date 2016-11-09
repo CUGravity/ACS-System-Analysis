@@ -1,11 +1,12 @@
-function [Oall,MMP,MPP,MCurrP,MCostP,...
+function [Oall,MMP,MPP,MVP,MCostP,...
     OFeasibleMinMass,OFeasibleMinPower,...
-    OFeasibleMinCurrent,OFeasibleMinCost] = coilcalcsplotter
+    OFeasibleMinVoltage,OFeasibleMinCost] = coilcalcsplotter
 
 clear; clc; close all;
 %% Feasible Sets
 
-[Oall,MMP,MPP,MCurrP,MCostP] = coilcalcsiteration;
+%MIN MASS
+[Oall,MMP,MPP,MVP,MCostP] = coilcalcsiteration;
 
 imMMP = all(Oall(:,2) == MMP(:,2),2); %Material set
 gMMP = all(Oall(:,3) == MMP(:,3),2); %Gauge set
@@ -16,6 +17,7 @@ inMMP = all(Oall(:,7) == MMP(:,7),2); %Num coils set
 %Set of all output states with the input parameters of min mass state:
 OFeasibleMinMass = Oall(logical(imMMP.*gMMP.*tiMMP.*tuMMP.*inMMP),:);
 
+%MIN POWER
 imMPP = all(Oall(:,2) == MPP(:,2),2); %Material set
 gMPP = all(Oall(:,3) == MPP(:,3),2); %Gauge set
 tiMPP = all(Oall(:,4) == MPP(:,4),2); %Time set
@@ -25,15 +27,17 @@ inMPP = all(Oall(:,7) == MPP(:,7),2); %Num coils set
 %Set of all output states with the input parameters of min power state:
 OFeasibleMinPower = Oall(logical(imMPP.*gMPP.*tiMPP.*tuMPP.*inMPP),:);
 
-imMCurrP = all(Oall(:,2) == MCurrP(:,2),2); %Material set
-gMCurrP = all(Oall(:,3) == MCurrP(:,3),2); %Gauge set
-tiMCurrP = all(Oall(:,4) == MCurrP(:,4),2); %Time set
-tuMCurrP = all(Oall(:,6) == MCurrP(:,6),2); %Turn set
-inMCurrP = all(Oall(:,7) == MCurrP(:,7),2); %Num coils set
+%MIN VOLTAGE
+imMVP = all(Oall(:,2) == MVP(:,2),2); %Material set
+gMVP = all(Oall(:,3) == MVP(:,3),2); %Gauge set
+tiMVP = all(Oall(:,4) == MVP(:,4),2); %Time set
+tuMVP = all(Oall(:,6) == MVP(:,6),2); %Turn set
+inMVP = all(Oall(:,7) == MVP(:,7),2); %Num coils set
 
-%Set of all output states with the input parameters of min current state:
-OFeasibleMinCurrent = Oall(logical(imMCurrP.*gMCurrP.*tiMCurrP.*tuMCurrP.*inMCurrP),:);
+%Set of all output states with the input parameters of min voltage state:
+OFeasibleMinVoltage = Oall(logical(imMVP.*gMVP.*tiMVP.*tuMVP.*inMVP),:);
 
+%MIN COST
 imMCostP = all(Oall(:,2) == MCostP(:,2),2); %Material set
 gMCostP = all(Oall(:,3) == MCostP(:,3),2); %Gauge set
 tiMCostP = all(Oall(:,4) == MCostP(:,4),2); %Time set
@@ -198,10 +202,10 @@ for ipc = 1:5;
 end
 
 
-%% For min current parameter states
+%% For min voltage parameter states
 for omegaPC = 1:10;
-    wA = all(OFeasibleMinCurrent(:,5) == omegaPC,2); %RPM hold
-    OFeasibleW = OFeasibleMinCurrent(logical(wA),:);
+    wA = all(OFeasibleMinVoltage(:,5) == omegaPC,2); %RPM hold
+    OFeasibleW = OFeasibleMinVoltage(logical(wA),:);
     
     Empty = isempty(OFeasibleW);
     
@@ -220,26 +224,26 @@ for omegaPC = 1:10;
         hold on;
         plot3(acW,prcntCW,powerW,'o');
         xlabel('G'); ylabel('Prcnt C'); zlabel('TOTAL Power');
-        title(['OMEGA=' num2str(omegaPC) ' MIN CURRENT PARAMS, P = f(PC,ac)']);
-        MP = plot3(MCurrP(1),MCurrP(8),MCurrP(14)+2*MCurrP(13),'*');
-        legend(MP,'Min current pt');
+        title(['OMEGA=' num2str(omegaPC) ' MIN VOLTAGE PARAMS, P = f(PC,ac)']);
+        MP = plot3(MVP(1),MVP(8),MVP(14)+2*MVP(13),'*');
+        legend(MP,'Min volts pt');
         hold off;
         
         subplot(2,1,2);
         hold on;
         plot3(acW,prcntCW,massW,'o');
         xlabel('G'); ylabel('Prcnt C'); zlabel('TOTAL Mass');
-        title(['OMEGA=' num2str(omegaPC) ' MIN CURRENT PARAMS, M = f(PC,ac)']);
-        MP = plot3(MCurrP(1),MCurrP(8),MCurrP(17),'*');
-        legend(MP,'Min current pt');
+        title(['OMEGA=' num2str(omegaPC) ' MIN VOLTAGE PARAMS, M = f(PC,ac)']);
+        MP = plot3(MVP(1),MVP(8),MVP(17),'*');
+        legend(MP,'Min volts pt');
         hold off;
     end
 end
 
 for ipc = 1:5;
     prcntC = 20*(ipc);
-    pcA = all(OFeasibleMinCurrent(:,8) == prcntC,2); %End cube size hold
-    OFeasiblePC = OFeasibleMinCurrent(logical(pcA),:);
+    pcA = all(OFeasibleMinVoltage(:,8) == prcntC,2); %End cube size hold
+    OFeasiblePC = OFeasibleMinVoltage(logical(pcA),:);
     
     Empty = isempty(OFeasiblePC);
     
@@ -259,8 +263,8 @@ for ipc = 1:5;
         plot3(acPC,omegaPC,powerPC,'o');
         xlabel('G'); ylabel('Omega'); zlabel('TOTAL Power');
         title(['PRCNT C=' num2str(prcntC) ' MIN CURRENT PARAMS, P = f(w,ac)']);
-        MP = plot3(MCurrP(1),MCurrP(5),MCurrP(14)+2*MCurrP(13),'*');
-        legend(MP,'Min current pt');
+        MP = plot3(MVP(1),MVP(5),MVP(14)+2*MVP(13),'*');
+        legend(MP,'Min volts pt');
         hold off;
         
         subplot(2,1,2);
@@ -268,8 +272,8 @@ for ipc = 1:5;
         plot3(acPC,omegaPC,massPC,'o');
         xlabel('G'); ylabel('Omega'); zlabel('TOTAL Mass');
         title(['PRCNT C=' num2str(prcntC) ' MIN CURRENT PARAMS, M = f(w,ac)']);
-        MP = plot3(MCurrP(1),MCurrP(5),MCurrP(17),'*');
-        legend(MP,'Min current pt');
+        MP = plot3(MVP(1),MVP(5),MVP(17),'*');
+        legend(MP,'Min volts pt');
         hold off;
     end
 end

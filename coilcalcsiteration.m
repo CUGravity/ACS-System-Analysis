@@ -1,4 +1,4 @@
-function [Oall,MMP,MPP,MCurrP,MCostP] = coilcalcsiteration
+function [Oall,MMP,MPP,MVP,MCostP] = coilcalcsiteration
 
 clear; clc; close all;
 %% Set up
@@ -46,20 +46,18 @@ for ia = 1:gIterations; % iterate over accelerations
                                 for ipt = 1:2;
                                     prcntT = 100*(ipt-1);
                                     
-                                    [radius,torque,current,...
-                                        powerEnd,powerCenter,massEnd,massCenter,massTotal,MinCost] = ...
+                                    [radius,torque,current,voltageEnd,...
+                                        powerEnd,voltageCenter,powerCenter,...
+                                        massEnd,massCenter,massTotal,MinCost] = ...
                                         coilcalcs(acceleration,w,time,turns,numcoils,...
                                         material,gauge,prcntC,prcntT,sf);
-                                    
-                                    voltsEnd = powerEnd/current;
-                                    voltsCenter = powerCenter/current;
                                     
                                     [OUTPUTS(i,:)] = [acceleration,im,...
                                         gauge,time,w,turns,numcoils,prcntC,...
                                         prcntT,radius,torque,current,...
                                         powerEnd,powerCenter,...
                                         massEnd,massCenter,massTotal,MinCost...
-                                        voltsEnd,voltsCenter];
+                                        voltageEnd,voltageCenter];
                                     
                                     i = i+1;
                                 end
@@ -117,7 +115,7 @@ for i = 1:length(OUTPUTS);
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,18) > 999999 %cost cutoff
+    if OUTPUTS(i,18) > 20 %cost cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
@@ -134,7 +132,7 @@ Oall = OUTPUTS;
 
 %% Finding optimal sets
 
-% Minimum mass
+% Minimum Mass
 [MinMass,MMI] = min(Oall(:,17)); %Find minimum mass and index
 MMP = Oall(MMI,:); % Find minimum mass parameters
 disp(' ');
@@ -148,7 +146,6 @@ disp(['w:                ' num2str(MMP(5)) '']);
 disp(['turns:            ' num2str(MMP(6)) '']);
 disp(['numcoils:         ' num2str(MMP(7)) '']);
 disp(['prcntC:           ' num2str(MMP(8)) '']);
-disp(['prcntT:           ' num2str(MMP(9)) '']);
 disp(['radius:           ' num2str(MMP(10)) '']);
 disp(['torque:           ' num2str(MMP(11)) '']);
 disp(['current:          ' num2str(MMP(12)) '']);
@@ -163,7 +160,7 @@ disp(['MinCost:          ' num2str(MMP(18)) '']);
 disp(' ');
 
 % Minimum Power
-PowerTotal = Oall(:,13) + Oall(:,14); %Find minimum power and index
+PowerTotal = 2*Oall(:,13) + Oall(:,14); %Find minimum power and index
 [MinPower,MPI] = min(PowerTotal); % Find minimum power parameters
 MPP = Oall(MPI,:);
 disp(' ');
@@ -177,7 +174,6 @@ disp(['w:                ' num2str(MPP(5)) '']);
 disp(['turns:            ' num2str(MPP(6)) '']);
 disp(['numcoils:         ' num2str(MPP(7)) '']);
 disp(['prcntC:           ' num2str(MPP(8)) '']);
-disp(['prcntT:           ' num2str(MPP(9)) '']);
 disp(['radius:           ' num2str(MPP(10)) '']);
 disp(['torque:           ' num2str(MPP(11)) '']);
 disp(['current:          ' num2str(MPP(12)) '']);
@@ -191,32 +187,32 @@ disp(['massTotal:        ' num2str(MPP(17)) '']);
 disp(['MinCost:          ' num2str(MPP(18)) '']);
 disp(' ');
 
-%Minimum Current
-[MinCurrent,MCurrI] = min(Oall(:,12)); %Find minimum current and index
-MCurrP= Oall(MCurrI,:); % Find minimum current parameters
+%Minimum Volts
+VoltsTotal = 2*Oall(:,19) + Oall(:,20); %Find minimum volts and index
+[MinVolts,MVI] = min(VoltsTotal); % Find minimum power parameters
+MVP = Oall(MVI,:);
 disp(' ');
-disp(['MINIMUM CURRENT (' num2str(MinCurrent) ') PARAMETERS:']);
+disp(['MINIMUM VOLTAGE (' num2str(MinVolts) ') PARAMETERS:']);
 disp('------------------------------------------');
-disp(['material:         ' Materials(MCurrP(2)) ]);
-disp(['acceleration:     ' num2str(MCurrP(1)) '']);
-disp(['gauge:            ' num2str(MCurrP(3)) '']);
-disp(['time:             ' num2str(MCurrP(4)) '']);
-disp(['w:                ' num2str(MCurrP(5)) '']);
-disp(['turns:            ' num2str(MCurrP(6)) '']);
-disp(['numcoils:         ' num2str(MCurrP(7)) '']);
-disp(['prcntC:           ' num2str(MCurrP(8)) '']);
-disp(['prcntT:           ' num2str(MCurrP(9)) '']);
-disp(['radius:           ' num2str(MCurrP(10)) '']);
-disp(['torque:           ' num2str(MCurrP(11)) '']);
-disp(['current:          ' num2str(MCurrP(12)) '']);
-disp(['powerEnd:         ' num2str(MCurrP(13)) '']);
-disp(['powerCenter:      ' num2str(MCurrP(14)) '']);
-disp(['voltsEnd:         ' num2str(MCurrP(19)) '']);
-disp(['voltsCenter:      ' num2str(MCurrP(20)) '']);
-disp(['massEnd:          ' num2str(MCurrP(15)) '']);
-disp(['massCenter:       ' num2str(MCurrP(16)) '']);
-disp(['massTotal:        ' num2str(MCurrP(17)) '']);
-disp(['MinCost:          ' num2str(MCurrP(18)) '']);
+disp(['material:         ' Materials(MVP(2)) ]);
+disp(['acceleration:     ' num2str(MVP(1)) '']);
+disp(['gauge:            ' num2str(MVP(3)) '']);
+disp(['time:             ' num2str(MVP(4)) '']);
+disp(['w:                ' num2str(MVP(5)) '']);
+disp(['turns:            ' num2str(MVP(6)) '']);
+disp(['numcoils:         ' num2str(MVP(7)) '']);
+disp(['prcntC:           ' num2str(MVP(8)) '']);
+disp(['radius:           ' num2str(MVP(10)) '']);
+disp(['torque:           ' num2str(MVP(11)) '']);
+disp(['current:          ' num2str(MVP(12)) '']);
+disp(['powerEnd:         ' num2str(MVP(13)) '']);
+disp(['powerCenter:      ' num2str(MVP(14)) '']);
+disp(['voltsEnd:         ' num2str(MVP(19)) '']);
+disp(['voltsCenter:      ' num2str(MVP(20)) '']);
+disp(['massEnd:          ' num2str(MVP(15)) '']);
+disp(['massCenter:       ' num2str(MVP(16)) '']);
+disp(['massTotal:        ' num2str(MVP(17)) '']);
+disp(['MinCost:          ' num2str(MVP(18)) '']);
 disp(' ');
 
 % Minimum Cost
@@ -233,7 +229,6 @@ disp(['w:                ' num2str(MCostP(5)) '']);
 disp(['turns:            ' num2str(MCostP(6)) '']);
 disp(['numcoils:         ' num2str(MCostP(7)) '']);
 disp(['prcntC:           ' num2str(MCostP(8)) '']);
-disp(['prcntT:           ' num2str(MCostP(9)) '']);
 disp(['radius:           ' num2str(MCostP(10)) '']);
 disp(['torque:           ' num2str(MCostP(11)) '']);
 disp(['current:          ' num2str(MCostP(12)) '']);
