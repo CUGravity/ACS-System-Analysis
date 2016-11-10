@@ -160,8 +160,8 @@ end
 torquesf = torque*sf;
 
 % Aface = l*l; %m^2
-Aend = lend*l; % Area of end sat side
-Acenter = lcenter*l; % Area of center sat side
+Aend = (lend-0.02)*(l-0.02); % Area of end sat side
+Acenter = (lcenter-0.02)*(l-0.02); % Area of center sat side
 
 % current needed for torque with all three coils in mag field
 current = torquesf/(turns*numcoils*B*(Acenter+Aend+Aend));

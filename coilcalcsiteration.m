@@ -17,8 +17,8 @@ TmaxDays = 7; %Set max time for spin up to achieve
 TimeIterations = 10; %Set number of steps between min and max time
 TimeSpan = linspace(TminDays*24,TmaxDays*24,TimeIterations);
 
-wmin = 1; %Set min w to achieve
-wmax = 10; %Set max w to achieve
+wmin = 4; %Set min w to achieve
+wmax = 6; %Set max w to achieve
 wIterations = 10; %Set number of steps between min and max w
 wSpan = linspace(wmin,wmax,wIterations);
 
