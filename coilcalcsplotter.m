@@ -6,7 +6,7 @@ clear; clc; close all;
 %% Feasible Sets
 
 %MIN MASS
-[Oall,MMP,MPP,MVP,MCostP] = coilcalcsiteration;
+[Oall,MMP,MPP,MVP,MCostP,MVCuP] = coilcalcsiteration;
 
 imMMP = all(Oall(:,2) == MMP(:,2),2); %Material set
 gMMP = all(Oall(:,3) == MMP(:,3),2); %Gauge set

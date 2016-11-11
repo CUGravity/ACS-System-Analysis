@@ -1,35 +1,47 @@
-function [Oall,MMP,MPP,MVP,MCostP] = coilcalcsiteration
+function [Oall,MMP,MPP,MVP,MCostP,MVCuP] = coilcalcsiteration
 
 clear; clc; close all;
 %% Set up
 
-Materials = {'Cu', 'Al7050', 'Al7178', 'NiCh', 'Nb', 'Ni'}; %Materials Tested
+%Determine feasible materials
+Materials = {'Cu', 'Au', 'Ag', 'Ta', 'NiCh', 'Nb', 'Ni'}; %Materials to test
+%TO TEST ONE MATERIAL ONLY
+%Materials = Materials(1) or enter string;
+
 [Gauges] = [20, 22, 24, 26, 28, 30, 35, 40]; %Gauges Tested
 sf = 1.2; %Safety Factor
 
-gmin = 0.375; %Set min g to achieve
-gmax = 0.385; %Set max g to achieve
-gIterations = 10; %Set number of steps between min and max g
+gmin = 0.38; %Set min g to achieve
+gmax = 0.42; %Set max g to achieve
+gIterations = 4; %Set number of steps between min and max g
 AccelSpan = linspace(gmin,gmax,gIterations);
 
-TminDays = 3; %Set min time for spin up to achieve
-TmaxDays = 7; %Set max time for spin up to achieve
-TimeIterations = 10; %Set number of steps between min and max time
+TminDays = 20; %Set min time for spin up to achieve
+TmaxDays = 25; %Set max time for spin up to achieve
+TimeIterations = 11; %Set number of steps between min and max time
 TimeSpan = linspace(TminDays*24,TmaxDays*24,TimeIterations);
 
-wmin = 4; %Set min w to achieve
+wmin = 5; %Set min w to achieve
 wmax = 6; %Set max w to achieve
 wIterations = 10; %Set number of steps between min and max w
 wSpan = linspace(wmin,wmax,wIterations);
 
-[OUTPUTS] = zeros((gIterations*6*8*TimeIterations*wIterations*6*2*5*2),20);
+prcntCmin = 50; %Set min g to achieve
+prcntCmax = 51; %Set max g to achieve
+prcntCIterations = 11; %Set number of steps between min and max g
+prcntCSpan = linspace(prcntCmin,prcntCmax,prcntCIterations);
+
+prcntT = 100;
+
+[OUTPUTS] = zeros((gIterations*length(Materials)*8*TimeIterations*wIterations...
+                                                *6*2*prcntCIterations),20);
 
 %% Enumeration/Iterations
 
 i = 1;
 for ia = 1:gIterations; % iterate over accelerations
     acceleration = AccelSpan(ia);
-    for im = 1:6; % iterate over materials
+    for im = 1:length(Materials); % iterate over materials
         material = Materials(im);
         for ig = 1:8; % iterate over gauges
             gauge = Gauges(ig);
@@ -41,26 +53,23 @@ for ia = 1:gIterations; % iterate over accelerations
                         turns = itu*50;
                         for in = 1:2; % iterate over number of coils
                             numcoils = in;
-                            for ipc = 1:5; % iterate over percent C
-                                prcntC = 20*(ipc);
-                                for ipt = 1:2;
-                                    prcntT = 100*(ipt-1);
-                                    
-                                    [radius,torque,current,voltageEnd,...
-                                        powerEnd,voltageCenter,powerCenter,...
-                                        massEnd,massCenter,massTotal,MinCost] = ...
-                                        coilcalcs(acceleration,w,time,turns,numcoils,...
-                                        material,gauge,prcntC,prcntT,sf);
-                                    
-                                    [OUTPUTS(i,:)] = [acceleration,im,...
-                                        gauge,time,w,turns,numcoils,prcntC,...
-                                        prcntT,radius,torque,current,...
-                                        powerEnd,powerCenter,...
-                                        massEnd,massCenter,massTotal,MinCost...
-                                        voltageEnd,voltageCenter];
-                                    
-                                    i = i+1;
-                                end
+                            for ipc = 1:prcntCIterations; % iterate over percent C
+                                prcntC = prcntCSpan(ipc);
+                                
+                                [radius,torque,current,voltageEnd,...
+                                    powerEnd,voltageCenter,powerCenter,...
+                                    massEnd,massCenter,massTotal,MinCost] = ...
+                                    coilcalcs(acceleration,w,time,turns,numcoils,...
+                                    material,gauge,prcntC,prcntT,sf);
+                                
+                                [OUTPUTS(i,:)] = [acceleration,im,...
+                                    gauge,time,w,turns,numcoils,prcntC,...
+                                    prcntT,radius,torque,current,...
+                                    powerEnd,powerCenter,...
+                                    massEnd,massCenter,massTotal,MinCost...
+                                    voltageEnd,voltageCenter];
+                                
+                                i = i+1;
                             end
                         end
                     end
@@ -115,13 +124,7 @@ for i = 1:length(OUTPUTS);
 end
 
 for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,18) > 20 %cost cutoff
-        [OUTPUTS(i,:)] = 0;
-    end
-end
-
-for i = 1:length(OUTPUTS);
-    if OUTPUTS(i,9) == 0 %State (Tether deployed)
+    if OUTPUTS(i,18) > 100 %cost cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
@@ -160,9 +163,9 @@ disp(['MinCost:          ' num2str(MMP(18)) '']);
 disp(' ');
 
 % Minimum Power
-PowerTotal = 2*Oall(:,13) + Oall(:,14); %Find minimum power and index
-[MinPower,MPI] = min(PowerTotal); % Find minimum power parameters
-MPP = Oall(MPI,:);
+PowerTotal = 2*Oall(:,13) + Oall(:,14);
+[MinPower,MPI] = min(PowerTotal); %Find minimum power and index
+MPP = Oall(MPI,:); % Find minimum power parameters
 disp(' ');
 disp(['MINIMUM POWER (' num2str(MinPower) ') PARAMETERS:']);
 disp('------------------------------------------');
@@ -188,9 +191,9 @@ disp(['MinCost:          ' num2str(MPP(18)) '']);
 disp(' ');
 
 %Minimum Volts
-VoltsTotal = 2*Oall(:,19) + Oall(:,20); %Find minimum volts and index
-[MinVolts,MVI] = min(VoltsTotal); % Find minimum power parameters
-MVP = Oall(MVI,:);
+VoltsTotal = 2*Oall(:,19) + Oall(:,20);
+[MinVolts,MVI] = min(VoltsTotal); %Find minimum volts and index
+MVP = Oall(MVI,:); % Find minimum power parameters
 disp(' ');
 disp(['MINIMUM VOLTAGE (' num2str(MinVolts) ') PARAMETERS:']);
 disp('------------------------------------------');
@@ -242,4 +245,33 @@ disp(['massTotal:        ' num2str(MCostP(17)) '']);
 disp(['MinCost:          ' num2str(MCostP(18)) '']);
 disp(' ');
 
+% Min volts Cu option (BEST FEASIBLE CASE)
+iCu = all(Oall(:,2) == 1,2);
+OallCu = Oall(logical(iCu),:);%All copper points
+CuVoltsTotal = 2*OallCu(:,19) + OallCu(:,20); %Find minimum Cu volts and index
+[MinVoltsCu,MVCuI] = min(CuVoltsTotal);
+MVCuP = Oall(MVCuI,:); % Find minimum volts with copper wire parameters
+disp(' ');
+disp(['MINIMUM VOLTS W COPPER (' num2str(MinVoltsCu) ') PARAMETERS:']);
+disp('------------------------------------------');
+disp(['material:         ' Materials(MVCuP(2)) ]);
+disp(['acceleration:     ' num2str(MVCuP(1)) '']);
+disp(['gauge:            ' num2str(MVCuP(3)) '']);
+disp(['time:             ' num2str(MVCuP(4)) '']);
+disp(['w:                ' num2str(MVCuP(5)) '']);
+disp(['turns:            ' num2str(MVCuP(6)) '']);
+disp(['numcoils:         ' num2str(MVCuP(7)) '']);
+disp(['prcntC:           ' num2str(MVCuP(8)) '']);
+disp(['radius:           ' num2str(MVCuP(10)) '']);
+disp(['torque:           ' num2str(MVCuP(11)) '']);
+disp(['current:          ' num2str(MVCuP(12)) '']);
+disp(['powerEnd:         ' num2str(MVCuP(13)) '']);
+disp(['powerCenter:      ' num2str(MVCuP(14)) '']);
+disp(['voltsEnd:         ' num2str(MVCuP(19)) '']);
+disp(['voltsCenter:      ' num2str(MVCuP(20)) '']);
+disp(['massEnd:          ' num2str(MVCuP(15)) '']);
+disp(['massCenter:       ' num2str(MVCuP(16)) '']);
+disp(['massTotal:        ' num2str(MVCuP(17)) '']);
+disp(['MinCost:          ' num2str(MVCuP(18)) '']);
+disp(' ');
 end
