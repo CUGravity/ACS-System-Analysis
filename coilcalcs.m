@@ -1,6 +1,6 @@
 function [radius,torque,current,voltageEnd,powerEnd,voltageCenter,powerCenter,...
     massEnd,massCenter,massTotal,MinCost] = ...
-    coilcalcs(acceleration,w,time,turns,numcoils,material,gauge,prcntC,prcntT,sf)
+    coilcalcs(acceleration,w,time,turns,numcoils,material,gauge,prcntC,prcntT,sf,EndCoils)
 %disp(' ');
 %%
 %disp(' ----- Inputs ----- ');
@@ -13,7 +13,7 @@ function [radius,torque,current,voltageEnd,powerEnd,voltageCenter,powerCenter,..
 %KNOWN CONST
 l = 0.1; %m
 m = 1.33; %kg
-B = 0.3e-4; % tesla
+B = 0.25e-4; % tesla
 
 %MATERIALS
 if strcmp('Cu',material)
@@ -160,16 +160,35 @@ end
 torquesf = torque*sf;
 
 % Aface = l*l; %m^2
-Aend = (lend-0.02)*(l-0.02); % Area of end sat side
-Acenter = (lcenter-0.02)*(l-0.02); % Area of center sat side
+L = l-0.02; %coil length size available 
+Lend = lend-0.02; %coil length size available end
+Lcenter = lcenter-0.02; %coil length size available center
+Aend = (Lend)*(L); % Area of end sat side
+Acenter = (Lcenter)*(L); % Area of center sat side
 
-% current needed for torque with all three coils in mag field
-current = torquesf/(turns*numcoils*B*(Acenter+Aend+Aend));
+if strcmp('yes',EndCoils)
+    
+    % current needed for torque with all three coils in mag field
+    current = torquesf/(turns*numcoils*B*(Acenter+Aend+Aend));
+        %disp(['Needed current: ',num2str(current),' Amperes']);
+    lengthEnd = turns*numcoils*(2*Lend+2*L); % length of coil wire in end (meters)
+    lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
+    
+elseif strcmp('no',EndCoils)
+    
+    % current needed for torque with one central coil in mag field
+    current = torquesf/(turns*numcoils*B*(Acenter));
+        %disp(['Needed current: ',num2str(current),' Amperes']);
+    lengthEnd = 0; % length of coil wire in end (meters)
+    lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
 
-%disp(['Needed current: ',num2str(current),' Amperes']);
-
-lengthEnd = turns*numcoils*(2*lend+2*l); % length of coil wire in end (meters)
-lengthCenter = turns*numcoils*(2*lcenter+2*l); %length of coil wire in center (meters)
+else
+    % current needed for torque with all three coils in mag field
+    current = torquesf/(turns*numcoils*B*(Acenter+Aend+Aend));
+        %disp(['Needed current: ',num2str(current),' Amperes']);
+    lengthEnd = turns*numcoils*(2*Lend+2*L); % length of coil wire in end (meters)
+    lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
+end
 
 resisEnd = p*lengthEnd/Ac; % resistance in end
 resisCenter = p*lengthCenter/Ac; % resistance in center

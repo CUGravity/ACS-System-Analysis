@@ -4,37 +4,44 @@ clear; clc; close all;
 %% Set up
 
 %Determine feasible materials
-Materials = {'Cu', 'Au', 'Ag', 'Ta', 'NiCh', 'Nb', 'Ni'}; %Materials to test
+Materials = {'Cu', 'Nb'}; %Materials to test
 %TO TEST ONE MATERIAL ONLY
 %Materials = Materials(1) or enter string;
 
 [Gauges] = [20, 22, 24, 26, 28, 30, 35, 40]; %Gauges Tested
-sf = 1.2; %Safety Factor
+sf = 1.4; %Safety Factor
 
-gmin = 0.38; %Set min g to achieve
-gmax = 0.42; %Set max g to achieve
-gIterations = 4; %Set number of steps between min and max g
+gmin = 0.17; %Set min g to achieve
+gmax = 0.19; %Set max g to achieve
+gIterations = 21; %Set number of steps between min and max g
 AccelSpan = linspace(gmin,gmax,gIterations);
 
-TminDays = 20; %Set min time for spin up to achieve
-TmaxDays = 25; %Set max time for spin up to achieve
+TminDays = 3; %Set min time for spin up to achieve
+TmaxDays = 8; %Set max time for spin up to achieve
 TimeIterations = 11; %Set number of steps between min and max time
 TimeSpan = linspace(TminDays*24,TmaxDays*24,TimeIterations);
 
 wmin = 5; %Set min w to achieve
 wmax = 6; %Set max w to achieve
-wIterations = 10; %Set number of steps between min and max w
+wIterations = 11; %Set number of steps between min and max w
 wSpan = linspace(wmin,wmax,wIterations);
 
-prcntCmin = 50; %Set min g to achieve
-prcntCmax = 51; %Set max g to achieve
-prcntCIterations = 11; %Set number of steps between min and max g
+Turnsmin = 50; %Set min g to achieve
+Turnsmax = 300; %Set max g to achieve
+TurnsIterations = (Turnsmax - Turnsmin)/10 + 1; %Set number of steps between min and max g
+TurnsSpan = linspace(Turnsmin,Turnsmax,TurnsIterations);
+
+prcntCmin = 50; %Set min prcnt C possible
+prcntCmax = 50; %Set max prcnt C possible
+prcntCIterations = 1; %Set number of steps between prcnt C
 prcntCSpan = linspace(prcntCmin,prcntCmax,prcntCIterations);
 
 prcntT = 100;
+numcoils = 1;
+EndCoils = {'yes'};
 
-[OUTPUTS] = zeros((gIterations*length(Materials)*8*TimeIterations*wIterations...
-                                                *6*2*prcntCIterations),20);
+[OUTPUTS] = zeros((gIterations*length(Materials)*length(Gauges)*TimeIterations*wIterations...
+    *TurnsIterations*prcntCIterations),20);
 
 %% Enumeration/Iterations
 
@@ -43,34 +50,31 @@ for ia = 1:gIterations; % iterate over accelerations
     acceleration = AccelSpan(ia);
     for im = 1:length(Materials); % iterate over materials
         material = Materials(im);
-        for ig = 1:8; % iterate over gauges
+        for ig = 1:length(Gauges); % iterate over gauges
             gauge = Gauges(ig);
             for iti = 1:TimeIterations; % iterate over spin up times
                 time = TimeSpan(iti);
                 for iw = 1:wIterations; % iterate over w
                     w = wSpan(iw);
-                    for itu = 1:6; % iterate over number of turns
-                        turns = itu*50;
-                        for in = 1:2; % iterate over number of coils
-                            numcoils = in;
-                            for ipc = 1:prcntCIterations; % iterate over percent C
-                                prcntC = prcntCSpan(ipc);
-                                
-                                [radius,torque,current,voltageEnd,...
-                                    powerEnd,voltageCenter,powerCenter,...
-                                    massEnd,massCenter,massTotal,MinCost] = ...
-                                    coilcalcs(acceleration,w,time,turns,numcoils,...
-                                    material,gauge,prcntC,prcntT,sf);
-                                
-                                [OUTPUTS(i,:)] = [acceleration,im,...
-                                    gauge,time,w,turns,numcoils,prcntC,...
-                                    prcntT,radius,torque,current,...
-                                    powerEnd,powerCenter,...
-                                    massEnd,massCenter,massTotal,MinCost...
-                                    voltageEnd,voltageCenter];
-                                
-                                i = i+1;
-                            end
+                    for itu = 1:TurnsIterations; % iterate over number of turns
+                        turns = TurnsSpan(itu);
+                        for ipc = 1:prcntCIterations; % iterate over percent C
+                            prcntC = prcntCSpan(ipc);
+                            
+                            [radius,torque,current,voltageEnd,...
+                                powerEnd,voltageCenter,powerCenter,...
+                                massEnd,massCenter,massTotal,MinCost] = ...
+                                coilcalcs(acceleration,w,time,turns,numcoils,...
+                                material,gauge,prcntC,prcntT,sf,EndCoils);
+                            
+                            [OUTPUTS(i,:)] = [acceleration,im,...
+                                gauge,time,w,turns,numcoils,prcntC,...
+                                prcntT,radius,torque,current,...
+                                powerEnd,powerCenter,...
+                                massEnd,massCenter,massTotal,MinCost...
+                                voltageEnd,voltageCenter];
+                            
+                            i = i+1;
                         end
                     end
                 end
@@ -95,6 +99,12 @@ end
 
 for i = 1:length(OUTPUTS);
     if OUTPUTS(i,17) > 4 %Mass Total cutoff
+        [OUTPUTS(i,:)] = 0;
+    end
+end
+
+for i = 1:length(OUTPUTS);
+    if OUTPUTS(i,12) > 0.6 %Current cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
