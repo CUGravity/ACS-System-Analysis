@@ -38,7 +38,7 @@ prcntCSpan = linspace(prcntCmin,prcntCmax,prcntCIterations);
 
 prcntT = 100;
 numcoils = 1;
-EndCoils = {'yes'};
+EndCoils = {'no'};
 
 [OUTPUTS] = zeros((gIterations*length(Materials)*length(Gauges)*TimeIterations*wIterations...
     *TurnsIterations*prcntCIterations),20);
@@ -145,143 +145,270 @@ Oall = OUTPUTS;
 
 %% Finding optimal sets
 
-% Minimum Mass
-[MinMass,MMI] = min(Oall(:,17)); %Find minimum mass and index
-MMP = Oall(MMI,:); % Find minimum mass parameters
-disp(' ');
-disp(['MINIMUM MASS (' num2str(MinMass) ') PARAMETERS:']);
-disp('------------------------------------------');
-disp(['material:         ' Materials(MMP(2)) ]);
-disp(['acceleration:     ' num2str(MMP(1)) '']);
-disp(['gauge:            ' num2str(MMP(3)) '']);
-disp(['time:             ' num2str(MMP(4)) '']);
-disp(['w:                ' num2str(MMP(5)) '']);
-disp(['turns:            ' num2str(MMP(6)) '']);
-disp(['numcoils:         ' num2str(MMP(7)) '']);
-disp(['prcntC:           ' num2str(MMP(8)) '']);
-disp(['radius:           ' num2str(MMP(10)) '']);
-disp(['torque:           ' num2str(MMP(11)) '']);
-disp(['current:          ' num2str(MMP(12)) '']);
-disp(['powerEnd:         ' num2str(MMP(13)) '']);
-disp(['powerCenter:      ' num2str(MMP(14)) '']);
-disp(['voltsEnd:         ' num2str(MMP(19)) '']);
-disp(['voltsCenter:      ' num2str(MMP(20)) '']);
-disp(['massEnd:          ' num2str(MMP(15)) '']);
-disp(['massCenter:       ' num2str(MMP(16)) '']);
-disp(['massTotal:        ' num2str(MMP(17)) '']);
-disp(['MinCost:          ' num2str(MMP(18)) '']);
-disp(' ');
-
-% Minimum Power
-PowerTotal = 2*Oall(:,13) + Oall(:,14);
-[MinPower,MPI] = min(PowerTotal); %Find minimum power and index
-MPP = Oall(MPI,:); % Find minimum power parameters
-disp(' ');
-disp(['MINIMUM POWER (' num2str(MinPower) ') PARAMETERS:']);
-disp('------------------------------------------');
-disp(['material:         ' Materials(MPP(2)) ]);
-disp(['acceleration:     ' num2str(MPP(1)) '']);
-disp(['gauge:            ' num2str(MPP(3)) '']);
-disp(['time:             ' num2str(MPP(4)) '']);
-disp(['w:                ' num2str(MPP(5)) '']);
-disp(['turns:            ' num2str(MPP(6)) '']);
-disp(['numcoils:         ' num2str(MPP(7)) '']);
-disp(['prcntC:           ' num2str(MPP(8)) '']);
-disp(['radius:           ' num2str(MPP(10)) '']);
-disp(['torque:           ' num2str(MPP(11)) '']);
-disp(['current:          ' num2str(MPP(12)) '']);
-disp(['powerEnd:         ' num2str(MPP(13)) '']);
-disp(['powerCenter:      ' num2str(MPP(14)) '']);
-disp(['voltsEnd:         ' num2str(MPP(19)) '']);
-disp(['voltsCenter:      ' num2str(MPP(20)) '']);
-disp(['massEnd:          ' num2str(MPP(15)) '']);
-disp(['massCenter:       ' num2str(MPP(16)) '']);
-disp(['massTotal:        ' num2str(MPP(17)) '']);
-disp(['MinCost:          ' num2str(MPP(18)) '']);
-disp(' ');
-
-%Minimum Volts
-VoltsTotal = 2*Oall(:,19) + Oall(:,20);
-[MinVolts,MVI] = min(VoltsTotal); %Find minimum volts and index
-MVP = Oall(MVI,:); % Find minimum power parameters
-disp(' ');
-disp(['MINIMUM VOLTAGE (' num2str(MinVolts) ') PARAMETERS:']);
-disp('------------------------------------------');
-disp(['material:         ' Materials(MVP(2)) ]);
-disp(['acceleration:     ' num2str(MVP(1)) '']);
-disp(['gauge:            ' num2str(MVP(3)) '']);
-disp(['time:             ' num2str(MVP(4)) '']);
-disp(['w:                ' num2str(MVP(5)) '']);
-disp(['turns:            ' num2str(MVP(6)) '']);
-disp(['numcoils:         ' num2str(MVP(7)) '']);
-disp(['prcntC:           ' num2str(MVP(8)) '']);
-disp(['radius:           ' num2str(MVP(10)) '']);
-disp(['torque:           ' num2str(MVP(11)) '']);
-disp(['current:          ' num2str(MVP(12)) '']);
-disp(['powerEnd:         ' num2str(MVP(13)) '']);
-disp(['powerCenter:      ' num2str(MVP(14)) '']);
-disp(['voltsEnd:         ' num2str(MVP(19)) '']);
-disp(['voltsCenter:      ' num2str(MVP(20)) '']);
-disp(['massEnd:          ' num2str(MVP(15)) '']);
-disp(['massCenter:       ' num2str(MVP(16)) '']);
-disp(['massTotal:        ' num2str(MVP(17)) '']);
-disp(['MinCost:          ' num2str(MVP(18)) '']);
-disp(' ');
-
-% Minimum Cost
-[MinCost,MCostI] = min(Oall(:,18)); %Find minimum cost and index
-MCostP = Oall(MCostI,:); % Find minimum cost parameters
-disp(' ');
-disp(['MINIMUM COST (' num2str(MinCost) ') PARAMETERS:']);
-disp('------------------------------------------');
-disp(['material:         ' Materials(MCostP(2)) ]);
-disp(['acceleration:     ' num2str(MCostP(1)) '']);
-disp(['gauge:            ' num2str(MCostP(3)) '']);
-disp(['time:             ' num2str(MCostP(4)) '']);
-disp(['w:                ' num2str(MCostP(5)) '']);
-disp(['turns:            ' num2str(MCostP(6)) '']);
-disp(['numcoils:         ' num2str(MCostP(7)) '']);
-disp(['prcntC:           ' num2str(MCostP(8)) '']);
-disp(['radius:           ' num2str(MCostP(10)) '']);
-disp(['torque:           ' num2str(MCostP(11)) '']);
-disp(['current:          ' num2str(MCostP(12)) '']);
-disp(['powerEnd:         ' num2str(MCostP(13)) '']);
-disp(['powerCenter:      ' num2str(MCostP(14)) '']);
-disp(['voltsEnd:         ' num2str(MCostP(19)) '']);
-disp(['voltsCenter:      ' num2str(MCostP(20)) '']);
-disp(['massEnd:          ' num2str(MCostP(15)) '']);
-disp(['massCenter:       ' num2str(MCostP(16)) '']);
-disp(['massTotal:        ' num2str(MCostP(17)) '']);
-disp(['MinCost:          ' num2str(MCostP(18)) '']);
-disp(' ');
-
-% Min volts Cu option (BEST FEASIBLE CASE)
-iCu = all(Oall(:,2) == 1,2);
-OallCu = Oall(logical(iCu),:);%All copper points
-CuVoltsTotal = 2*OallCu(:,19) + OallCu(:,20); %Find minimum Cu volts and index
-[MinVoltsCu,MVCuI] = min(CuVoltsTotal);
-MVCuP = Oall(MVCuI,:); % Find minimum volts with copper wire parameters
-disp(' ');
-disp(['MINIMUM VOLTS W COPPER (' num2str(MinVoltsCu) ') PARAMETERS:']);
-disp('------------------------------------------');
-disp(['material:         ' Materials(MVCuP(2)) ]);
-disp(['acceleration:     ' num2str(MVCuP(1)) '']);
-disp(['gauge:            ' num2str(MVCuP(3)) '']);
-disp(['time:             ' num2str(MVCuP(4)) '']);
-disp(['w:                ' num2str(MVCuP(5)) '']);
-disp(['turns:            ' num2str(MVCuP(6)) '']);
-disp(['numcoils:         ' num2str(MVCuP(7)) '']);
-disp(['prcntC:           ' num2str(MVCuP(8)) '']);
-disp(['radius:           ' num2str(MVCuP(10)) '']);
-disp(['torque:           ' num2str(MVCuP(11)) '']);
-disp(['current:          ' num2str(MVCuP(12)) '']);
-disp(['powerEnd:         ' num2str(MVCuP(13)) '']);
-disp(['powerCenter:      ' num2str(MVCuP(14)) '']);
-disp(['voltsEnd:         ' num2str(MVCuP(19)) '']);
-disp(['voltsCenter:      ' num2str(MVCuP(20)) '']);
-disp(['massEnd:          ' num2str(MVCuP(15)) '']);
-disp(['massCenter:       ' num2str(MVCuP(16)) '']);
-disp(['massTotal:        ' num2str(MVCuP(17)) '']);
-disp(['MinCost:          ' num2str(MVCuP(18)) '']);
-disp(' ');
+if strcmp('yes',EndCoils)
+    disp('Minimum output sets WITH coils in ends');
+    
+    % Minimum Mass
+    [MinMass,MMI] = min(Oall(:,17)); %Find minimum mass and index
+    MMP = Oall(MMI,:); % Find minimum mass parameters
+    disp(' ');
+    disp(['MINIMUM MASS (' num2str(MinMass) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MMP(2)) ]);
+    disp(['acceleration:     ' num2str(MMP(1)) '']);
+    disp(['gauge:            ' num2str(MMP(3)) '']);
+    disp(['time:             ' num2str(MMP(4)) '']);
+    disp(['w:                ' num2str(MMP(5)) '']);
+    disp(['turns:            ' num2str(MMP(6)) '']);
+    disp(['numcoils:         ' num2str(MMP(7)) '']);
+    disp(['prcntC:           ' num2str(MMP(8)) '']);
+    disp(['radius:           ' num2str(MMP(10)) '']);
+    disp(['torque:           ' num2str(MMP(11)) '']);
+    disp(['current:          ' num2str(MMP(12)) '']);
+    disp(['powerEnd:         ' num2str(MMP(13)) '']);
+    disp(['powerCenter:      ' num2str(MMP(14)) '']);
+    disp(['voltsEnd:         ' num2str(MMP(19)) '']);
+    disp(['voltsCenter:      ' num2str(MMP(20)) '']);
+    disp(['massEnd:          ' num2str(MMP(15)) '']);
+    disp(['massCenter:       ' num2str(MMP(16)) '']);
+    disp(['massTotal:        ' num2str(MMP(17)) '']);
+    disp(['MinCost:          ' num2str(MMP(18)) '']);
+    disp(' ');
+    
+    % Minimum Power
+    PowerTotal = 2*Oall(:,13) + Oall(:,14);
+    [MinPower,MPI] = min(PowerTotal); %Find minimum power and index
+    MPP = Oall(MPI,:); % Find minimum power parameters
+    disp(' ');
+    disp(['MINIMUM POWER (' num2str(MinPower) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MPP(2)) ]);
+    disp(['acceleration:     ' num2str(MPP(1)) '']);
+    disp(['gauge:            ' num2str(MPP(3)) '']);
+    disp(['time:             ' num2str(MPP(4)) '']);
+    disp(['w:                ' num2str(MPP(5)) '']);
+    disp(['turns:            ' num2str(MPP(6)) '']);
+    disp(['numcoils:         ' num2str(MPP(7)) '']);
+    disp(['prcntC:           ' num2str(MPP(8)) '']);
+    disp(['radius:           ' num2str(MPP(10)) '']);
+    disp(['torque:           ' num2str(MPP(11)) '']);
+    disp(['current:          ' num2str(MPP(12)) '']);
+    disp(['powerEnd:         ' num2str(MPP(13)) '']);
+    disp(['powerCenter:      ' num2str(MPP(14)) '']);
+    disp(['voltsEnd:         ' num2str(MPP(19)) '']);
+    disp(['voltsCenter:      ' num2str(MPP(20)) '']);
+    disp(['massEnd:          ' num2str(MPP(15)) '']);
+    disp(['massCenter:       ' num2str(MPP(16)) '']);
+    disp(['massTotal:        ' num2str(MPP(17)) '']);
+    disp(['MinCost:          ' num2str(MPP(18)) '']);
+    disp(' ');
+    
+    %Minimum Volts
+    VoltsTotal = 2*Oall(:,19) + Oall(:,20);
+    [MinVolts,MVI] = min(VoltsTotal); %Find minimum volts and index
+    MVP = Oall(MVI,:); % Find minimum power parameters
+    disp(' ');
+    disp(['MINIMUM VOLTAGE (' num2str(MinVolts) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MVP(2)) ]);
+    disp(['acceleration:     ' num2str(MVP(1)) '']);
+    disp(['gauge:            ' num2str(MVP(3)) '']);
+    disp(['time:             ' num2str(MVP(4)) '']);
+    disp(['w:                ' num2str(MVP(5)) '']);
+    disp(['turns:            ' num2str(MVP(6)) '']);
+    disp(['numcoils:         ' num2str(MVP(7)) '']);
+    disp(['prcntC:           ' num2str(MVP(8)) '']);
+    disp(['radius:           ' num2str(MVP(10)) '']);
+    disp(['torque:           ' num2str(MVP(11)) '']);
+    disp(['current:          ' num2str(MVP(12)) '']);
+    disp(['powerEnd:         ' num2str(MVP(13)) '']);
+    disp(['powerCenter:      ' num2str(MVP(14)) '']);
+    disp(['voltsEnd:         ' num2str(MVP(19)) '']);
+    disp(['voltsCenter:      ' num2str(MVP(20)) '']);
+    disp(['massEnd:          ' num2str(MVP(15)) '']);
+    disp(['massCenter:       ' num2str(MVP(16)) '']);
+    disp(['massTotal:        ' num2str(MVP(17)) '']);
+    disp(['MinCost:          ' num2str(MVP(18)) '']);
+    disp(' ');
+    
+    % Minimum Cost
+    [MinCost,MCostI] = min(Oall(:,18)); %Find minimum cost and index
+    MCostP = Oall(MCostI,:); % Find minimum cost parameters
+    disp(' ');
+    disp(['MINIMUM COST (' num2str(MinCost) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MCostP(2)) ]);
+    disp(['acceleration:     ' num2str(MCostP(1)) '']);
+    disp(['gauge:            ' num2str(MCostP(3)) '']);
+    disp(['time:             ' num2str(MCostP(4)) '']);
+    disp(['w:                ' num2str(MCostP(5)) '']);
+    disp(['turns:            ' num2str(MCostP(6)) '']);
+    disp(['numcoils:         ' num2str(MCostP(7)) '']);
+    disp(['prcntC:           ' num2str(MCostP(8)) '']);
+    disp(['radius:           ' num2str(MCostP(10)) '']);
+    disp(['torque:           ' num2str(MCostP(11)) '']);
+    disp(['current:          ' num2str(MCostP(12)) '']);
+    disp(['powerEnd:         ' num2str(MCostP(13)) '']);
+    disp(['powerCenter:      ' num2str(MCostP(14)) '']);
+    disp(['voltsEnd:         ' num2str(MCostP(19)) '']);
+    disp(['voltsCenter:      ' num2str(MCostP(20)) '']);
+    disp(['massEnd:          ' num2str(MCostP(15)) '']);
+    disp(['massCenter:       ' num2str(MCostP(16)) '']);
+    disp(['massTotal:        ' num2str(MCostP(17)) '']);
+    disp(['MinCost:          ' num2str(MCostP(18)) '']);
+    disp(' ');
+    
+    % Min volts Cu option (BEST FEASIBLE CASE)
+    iCu = all(Oall(:,2) == 1,2);
+    OallCu = Oall(logical(iCu),:);%All copper points
+    CuVoltsTotal = 2*OallCu(:,19) + OallCu(:,20); %Find minimum Cu volts and index
+    [MinVoltsCu,MVCuI] = min(CuVoltsTotal);
+    MVCuP = Oall(MVCuI,:); % Find minimum volts with copper wire parameters
+    disp(' ');
+    disp(['MINIMUM VOLTS W COPPER (' num2str(MinVoltsCu) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MVCuP(2)) ]);
+    disp(['acceleration:     ' num2str(MVCuP(1)) '']);
+    disp(['gauge:            ' num2str(MVCuP(3)) '']);
+    disp(['time:             ' num2str(MVCuP(4)) '']);
+    disp(['w:                ' num2str(MVCuP(5)) '']);
+    disp(['turns:            ' num2str(MVCuP(6)) '']);
+    disp(['numcoils:         ' num2str(MVCuP(7)) '']);
+    disp(['prcntC:           ' num2str(MVCuP(8)) '']);
+    disp(['radius:           ' num2str(MVCuP(10)) '']);
+    disp(['torque:           ' num2str(MVCuP(11)) '']);
+    disp(['current:          ' num2str(MVCuP(12)) '']);
+    disp(['powerEnd:         ' num2str(MVCuP(13)) '']);
+    disp(['powerCenter:      ' num2str(MVCuP(14)) '']);
+    disp(['voltsEnd:         ' num2str(MVCuP(19)) '']);
+    disp(['voltsCenter:      ' num2str(MVCuP(20)) '']);
+    disp(['massEnd:          ' num2str(MVCuP(15)) '']);
+    disp(['massCenter:       ' num2str(MVCuP(16)) '']);
+    disp(['massTotal:        ' num2str(MVCuP(17)) '']);
+    disp(['MinCost:          ' num2str(MVCuP(18)) '']);
+    disp(' ');
+    
+else
+    disp('Minimum output sets WITHOUT coils in ends');
+    
+    % Minimum Mass
+    [MinMass,MMI] = min(Oall(:,17)); %Find minimum mass and index
+    MMP = Oall(MMI,:); % Find minimum mass parameters
+    disp(' ');
+    disp(['MINIMUM MASS (' num2str(MinMass) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MMP(2)) ]);
+    disp(['acceleration:     ' num2str(MMP(1)) '']);
+    disp(['gauge:            ' num2str(MMP(3)) '']);
+    disp(['time:             ' num2str(MMP(4)) '']);
+    disp(['w:                ' num2str(MMP(5)) '']);
+    disp(['turns:            ' num2str(MMP(6)) '']);
+    disp(['numcoils:         ' num2str(MMP(7)) '']);
+    disp(['prcntC:           ' num2str(MMP(8)) '']);
+    disp(['radius:           ' num2str(MMP(10)) '']);
+    disp(['torque:           ' num2str(MMP(11)) '']);
+    disp(['current:          ' num2str(MMP(12)) '']);
+    disp(['powerCenter:      ' num2str(MMP(14)) '']);
+    disp(['voltsCenter:      ' num2str(MMP(20)) '']);
+    disp(['massCenter:       ' num2str(MMP(16)) '']);
+    disp(['MinCost:          ' num2str(MMP(18)) '']);
+    disp(' ');
+    
+    % Minimum Power
+    PowerTotal = 2*Oall(:,13) + Oall(:,14);
+    [MinPower,MPI] = min(PowerTotal); %Find minimum power and index
+    MPP = Oall(MPI,:); % Find minimum power parameters
+    disp(' ');
+    disp(['MINIMUM POWER (' num2str(MinPower) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MPP(2)) ]);
+    disp(['acceleration:     ' num2str(MPP(1)) '']);
+    disp(['gauge:            ' num2str(MPP(3)) '']);
+    disp(['time:             ' num2str(MPP(4)) '']);
+    disp(['w:                ' num2str(MPP(5)) '']);
+    disp(['turns:            ' num2str(MPP(6)) '']);
+    disp(['numcoils:         ' num2str(MPP(7)) '']);
+    disp(['prcntC:           ' num2str(MPP(8)) '']);
+    disp(['radius:           ' num2str(MPP(10)) '']);
+    disp(['torque:           ' num2str(MPP(11)) '']);
+    disp(['current:          ' num2str(MPP(12)) '']);
+    disp(['powerCenter:      ' num2str(MPP(14)) '']);
+    disp(['voltsCenter:      ' num2str(MPP(20)) '']);
+    disp(['massCenter:       ' num2str(MPP(16)) '']);
+    disp(['MinCost:          ' num2str(MPP(18)) '']);
+    disp(' ');
+    
+    %Minimum Volts
+    VoltsTotal = 2*Oall(:,19) + Oall(:,20);
+    [MinVolts,MVI] = min(VoltsTotal); %Find minimum volts and index
+    MVP = Oall(MVI,:); % Find minimum power parameters
+    disp(' ');
+    disp(['MINIMUM VOLTAGE (' num2str(MinVolts) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MVP(2)) ]);
+    disp(['acceleration:     ' num2str(MVP(1)) '']);
+    disp(['gauge:            ' num2str(MVP(3)) '']);
+    disp(['time:             ' num2str(MVP(4)) '']);
+    disp(['w:                ' num2str(MVP(5)) '']);
+    disp(['turns:            ' num2str(MVP(6)) '']);
+    disp(['numcoils:         ' num2str(MVP(7)) '']);
+    disp(['prcntC:           ' num2str(MVP(8)) '']);
+    disp(['radius:           ' num2str(MVP(10)) '']);
+    disp(['torque:           ' num2str(MVP(11)) '']);
+    disp(['current:          ' num2str(MVP(12)) '']);
+    disp(['powerCenter:      ' num2str(MVP(14)) '']);
+    disp(['voltsCenter:      ' num2str(MVP(20)) '']);
+    disp(['massCenter:       ' num2str(MVP(16)) '']);
+    disp(['MinCost:          ' num2str(MVP(18)) '']);
+    disp(' ');
+    
+    % Minimum Cost
+    [MinCost,MCostI] = min(Oall(:,18)); %Find minimum cost and index
+    MCostP = Oall(MCostI,:); % Find minimum cost parameters
+    disp(' ');
+    disp(['MINIMUM COST (' num2str(MinCost) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MCostP(2)) ]);
+    disp(['acceleration:     ' num2str(MCostP(1)) '']);
+    disp(['gauge:            ' num2str(MCostP(3)) '']);
+    disp(['time:             ' num2str(MCostP(4)) '']);
+    disp(['w:                ' num2str(MCostP(5)) '']);
+    disp(['turns:            ' num2str(MCostP(6)) '']);
+    disp(['numcoils:         ' num2str(MCostP(7)) '']);
+    disp(['prcntC:           ' num2str(MCostP(8)) '']);
+    disp(['radius:           ' num2str(MCostP(10)) '']);
+    disp(['torque:           ' num2str(MCostP(11)) '']);
+    disp(['current:          ' num2str(MCostP(12)) '']);
+    disp(['powerCenter:      ' num2str(MCostP(14)) '']);
+    disp(['voltsCenter:      ' num2str(MCostP(20)) '']);
+    disp(['massCenter:       ' num2str(MCostP(16)) '']);
+    disp(['MinCost:          ' num2str(MCostP(18)) '']);
+    disp(' ');
+    
+    % Min volts Cu option (BEST FEASIBLE CASE)
+    iCu = all(Oall(:,2) == 1,2);
+    OallCu = Oall(logical(iCu),:);%All copper points
+    CuVoltsTotal = 2*OallCu(:,19) + OallCu(:,20); %Find minimum Cu volts and index
+    [MinVoltsCu,MVCuI] = min(CuVoltsTotal);
+    MVCuP = Oall(MVCuI,:); % Find minimum volts with copper wire parameters
+    disp(' ');
+    disp(['MINIMUM VOLTS W COPPER (' num2str(MinVoltsCu) ') PARAMETERS:']);
+    disp('------------------------------------------');
+    disp(['material:         ' Materials(MVCuP(2)) ]);
+    disp(['acceleration:     ' num2str(MVCuP(1)) '']);
+    disp(['gauge:            ' num2str(MVCuP(3)) '']);
+    disp(['time:             ' num2str(MVCuP(4)) '']);
+    disp(['w:                ' num2str(MVCuP(5)) '']);
+    disp(['turns:            ' num2str(MVCuP(6)) '']);
+    disp(['numcoils:         ' num2str(MVCuP(7)) '']);
+    disp(['prcntC:           ' num2str(MVCuP(8)) '']);
+    disp(['radius:           ' num2str(MVCuP(10)) '']);
+    disp(['torque:           ' num2str(MVCuP(11)) '']);
+    disp(['current:          ' num2str(MVCuP(12)) '']);
+    disp(['powerCenter:      ' num2str(MVCuP(14)) '']);
+    disp(['voltsCenter:      ' num2str(MVCuP(20)) '']);
+    disp(['massCenter:       ' num2str(MVCuP(16)) '']);
+    disp(['MinCost:          ' num2str(MVCuP(18)) '']);
+    disp(' ');
+end
 end
