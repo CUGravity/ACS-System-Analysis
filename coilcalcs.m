@@ -4,7 +4,8 @@ function [radius,torque,current,voltageEnd,powerEnd,voltageCenter,powerCenter,..
 %disp(' ');
 %%
 %disp(' ----- Inputs ----- ');
-% a = 0.1; % gees
+% a = 0.1; % gees 
+% Cory was here
 % w = 6; % rpm
 % t = 24; %hours
 % n = 1   00; % turns
