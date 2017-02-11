@@ -77,7 +77,7 @@ else % default
     MinCostPerkg = MinCostPerPound*0.4536;
 end
 
-%GUAGES
+%GAUGES
 if gauge == 24
     Ac = 8.2e-7; %m^2 - 24 gauge (0.511 mm)
 elseif gauge == 5
