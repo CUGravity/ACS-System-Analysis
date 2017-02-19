@@ -40,7 +40,7 @@ prcntT = 100;
 numcoils = 1;
 EndCoils = {'no'};
 
-[OUTPUTS] = zeros((gIterations*length(Materials)*length(Gauges)*TimeIterations*wIterations...
+OUTPUTS = zeros((gIterations*length(Materials)*length(Gauges)*TimeIterations*wIterations...
     *TurnsIterations*prcntCIterations),20);
 
 %% Enumeration/Iterations
