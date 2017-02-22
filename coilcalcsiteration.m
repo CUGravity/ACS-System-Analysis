@@ -1,4 +1,4 @@
-function coilcalcsiteration
+function [Oall, MMP, MPP, MVP, MCostP, MVCuP] = coilcalcsiteration
 
 % Outputs to the function are:
 %   Oall    :
@@ -7,6 +7,10 @@ function coilcalcsiteration
 %   MVP     : Minimum voltage parameters
 %   MCostP  : Minimum cost parameters
 %   MVCuP   : Minimum volts with copper parameters
+%
+% Delete all outputs if you would not like to get any unimportant tabulated
+% results. DO NOT delete all outputs if running coilcalcsplotter.m; all
+% outputs are taken as sub-parameters in the coilcalcsplotterm program.
 
 clear; clc; close all;
 %% Set up
@@ -94,55 +98,40 @@ end
 %% Output Cutoffs
 
 for i = 1:length(OUTPUTS)
-    if OUTPUTS(i,16) > 0.865 %Mass Center cutoff
-        [OUTPUTS(i,:)] = 0;
-    end
-end
-
-for i = 1:length(OUTPUTS)
-    if OUTPUTS(i,15) > 0.16 %Mass End cutoff
-        [OUTPUTS(i,:)] = 0;
-    end
-end
-
-for i = 1:length(OUTPUTS)
-    if OUTPUTS(i,17) > 4 %Mass Total cutoff
-        [OUTPUTS(i,:)] = 0;
-    end
-end
-
-for i = 1:length(OUTPUTS)
+    
     if OUTPUTS(i,12) > 0.6 %Current cutoff
         [OUTPUTS(i,:)] = 0;
     end
-end
-
-for i = 1:length(OUTPUTS)
-    if OUTPUTS(i,14) > 3 %Power Center cutoff
-        [OUTPUTS(i,:)] = 0;
-    end
-end
-
-for i = 1:length(OUTPUTS)
+    
     if OUTPUTS(i,13) > 1 %Power End cutoff
         [OUTPUTS(i,:)] = 0;
     end
-end
-
-for i = 1:length(OUTPUTS)
-    if OUTPUTS(i,20) > 7.2 %Volts Center cutoff
+    
+    if OUTPUTS(i,14) > 3 %Power Center cutoff
         [OUTPUTS(i,:)] = 0;
     end
-end
-
-for i = 1:length(OUTPUTS)
+    
+    if OUTPUTS(i,15) > 0.16 %Mass End cutoff
+        [OUTPUTS(i,:)] = 0;
+    end
+    
+    if OUTPUTS(i,16) > 0.865 %Mass Center cutoff
+        [OUTPUTS(i,:)] = 0;
+    end
+    
+    if OUTPUTS(i,17) > 4 %Mass Total cutoff
+        [OUTPUTS(i,:)] = 0;
+    end
+    
+    if OUTPUTS(i,18) > 100 %cost cutoff
+        [OUTPUTS(i,:)] = 0;
+    end
+    
     if OUTPUTS(i,19) > 7.2 %Volts End cutoff
         [OUTPUTS(i,:)] = 0;
     end
-end
-
-for i = 1:length(OUTPUTS)
-    if OUTPUTS(i,18) > 100 %cost cutoff
+    
+    if OUTPUTS(i,20) > 7.2 %Volts Center cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
@@ -419,4 +408,5 @@ else
     disp(['MinCost:          ' num2str(MVCuP(18)) '']);
     disp(' ');
 end
+
 end

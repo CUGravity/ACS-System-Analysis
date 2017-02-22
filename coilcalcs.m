@@ -67,8 +67,6 @@ end
 
 %GAUGES
 switch gauge
-    case 24
-        Ac = 8.2e-7; %m^2 - 24 gauge (0.511 mm)
     case 5
         r = 4.621/1000;
         Ac = pi*r^2;
@@ -84,6 +82,8 @@ switch gauge
     case 22
         r = 0.644/1000;
         Ac = pi*r^2;
+    case 24
+        Ac = 8.2e-7; %m^2 - 24 gauge (0.511 mm)
     case 26
         r = 0.405/1000;
         Ac = pi*r^2;
@@ -147,7 +147,7 @@ Lcenter = lcenter-0.02;     % Coil length size available center
 Aend = (Lend)*(L);          % Area of end sat side
 Acenter = (Lcenter)*(L);    % Area of center sat side
 
-k = 100;            % Relative permeability for iron
+k = 1;            % Relative permeability for iron
 B_core = B*k;       % New core magnetic moment
 
 if strcmp('yes',EndCoils)
@@ -165,6 +165,7 @@ elseif strcmp('no',EndCoils)
     lengthCenter = turns*numcoils*(2*Lcenter+2*L);          % length of coil wire in center (meters)
 
 else
+    
     % current needed for torque with all three coils in mag field
     current = torquesf/(turns*numcoils*B_core*(Acenter+Aend+Aend));
     lengthEnd = turns*numcoils*(2*Lend+2*L);                % length of coil wire in end (meters)
