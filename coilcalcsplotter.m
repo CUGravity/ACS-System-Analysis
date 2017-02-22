@@ -1,17 +1,17 @@
 function coilcalcsplotter
 
 % Outputs to the function are:
-%   Oall                    :
-%   MMP                     :
-%   MPP                     :
-%   MVP                     :
-%   MCostP                  :
-%   MVCuP                   :
-%   OFeasibleMinMass        :
-%   OFeasibleMinPower       :
-%   OFeasibleMinVoltage     :
-%   OFeasibleMinCost        :
-%   OFeasibleMinVoltsCu     :
+%   Oall                    : All outputs
+%   MMP                     : Minimum mass paramter
+%   MPP                     : Minimum power parameter
+%   MVP                     : Minimum voltage parameter
+%   MCostP                  : Minimum cost parameter
+%   MVCuP                   : Minimum voltage of copper parameter
+%   OFeasibleMinMass        : --
+%   OFeasibleMinPower       : --
+%   OFeasibleMinVoltage     : --
+%   OFeasibleMinCost        : --
+%   OFeasibleMinVoltsCu     : --
 
 clear; clc; close all;
 %% Feasible Sets
