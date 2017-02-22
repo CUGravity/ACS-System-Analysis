@@ -1,4 +1,12 @@
-function [Oall,MMP,MPP,MVP,MCostP,MVCuP] = coilcalcsiteration
+function coilcalcsiteration
+
+% Outputs to the function are:
+%   Oall    :
+%   MMP     : Minimum mass parameters
+%   MPP     : Minimum power parameters
+%   MVP     : Minimum voltage parameters
+%   MCostP  : Minimum cost parameters
+%   MVCuP   : Minimum volts with copper parameters
 
 clear; clc; close all;
 %% Set up

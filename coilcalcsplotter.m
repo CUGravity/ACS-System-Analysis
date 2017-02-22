@@ -1,6 +1,17 @@
-function [Oall,MMP,MPP,MVP,MCostP,MVCuP,...
-    OFeasibleMinMass,OFeasibleMinPower,...
-    OFeasibleMinVoltage,OFeasibleMinCost,OFeasibleMinVoltsCu] = coilcalcsplotter
+function coilcalcsplotter
+
+% Outputs to the function are:
+%   Oall                    :
+%   MMP                     :
+%   MPP                     :
+%   MVP                     :
+%   MCostP                  :
+%   MVCuP                   :
+%   OFeasibleMinMass        :
+%   OFeasibleMinPower       :
+%   OFeasibleMinVoltage     :
+%   OFeasibleMinCost        :
+%   OFeasibleMinVoltsCu     :
 
 clear; clc; close all;
 %% Feasible Sets
