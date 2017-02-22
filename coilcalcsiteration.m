@@ -85,55 +85,55 @@ end
 
 %% Output Cutoffs
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,16) > 0.865 %Mass Center cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,15) > 0.16 %Mass End cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,17) > 4 %Mass Total cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,12) > 0.6 %Current cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,14) > 3 %Power Center cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,13) > 1 %Power End cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,20) > 7.2 %Volts Center cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,19) > 7.2 %Volts End cutoff
         [OUTPUTS(i,:)] = 0;
     end
 end
 
-for i = 1:length(OUTPUTS);
+for i = 1:length(OUTPUTS)
     if OUTPUTS(i,18) > 100 %cost cutoff
         [OUTPUTS(i,:)] = 0;
     end
