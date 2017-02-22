@@ -1,37 +1,27 @@
 function [radius,torque,current,voltageEnd,powerEnd,voltageCenter,powerCenter,...
     massEnd,massCenter,massTotal,MinCost] = ...
     coilcalcs(acceleration,w,time,turns,numcoils,material,gauge,prcntC,prcntT,sf,EndCoils)
-%disp(' ');
-%%
-%disp(' ----- Inputs ----- ');
-% a = 0.1; % gees 
-% w = 6; % rpm
-% t = 24; %hours
-% n = 1   00; % turns
-% c = 3; % numcoils
 
 %KNOWN CONST
-l = 0.1; %m
-m = 1.33; %kg
-B = 0.25e-4; % tesla
+l = 0.1;        % Length (in meters)
+m = 1.33;       % Mass (in kilograms)
+B = 0.25e-4;    % Earth magnetic field (in Tesla)
 
 %MATERIALS
 if strcmp('Cu',material)
-    p = 1.68e-8; % Ohm m (copper)
-    Density = 8960; % kg/m^3 density of copper
-    MinCostPerPound = 2.17; %Cost
+    p = 1.68e-8;                            % Ohm m (copper)
+    Density = 8960;                         % kg/m^3 density of copper
+    MinCostPerPound = 2.17;                 % Cost
     MinCostPerkg = MinCostPerPound*0.4536;
 
-elseif strcmp('Au',material) %Gold
+elseif strcmp('Au',material)                % Gold
     p = 2.44e-8;
     Density = 19300;
-    %MinCostPerPound = ;
     MinCostPerkg = 41024.83;
 
 elseif strcmp('Ag',material) %Silver
     p = 1.59e-8;
     Density = 10490;
-    %MinCostPerPound = ;
     MinCostPerkg = 570.90;
 
 elseif strcmp('Al7050',material) %Aluminum 7050
@@ -55,13 +45,11 @@ elseif strcmp('NiCh',material) %Nickel-Chrome
 elseif strcmp('Nb',material) %Niobium
     p = 1.52e-8;
     Density = 8570;
-    %MinCostPerPound = ;
     MinCostPerkg = 180;
 
 elseif strcmp('Ta',material) %Tantalum
     p = 1.31e-8;
     Density = 16690;
-    %MinCostPerPound = 2.17;
     MinCostPerkg = 150;
 
 elseif strcmp('Ni',material) %Nickel
@@ -78,54 +66,47 @@ else % default
 end
 
 %GAUGES
-if gauge == 24
-    Ac = 8.2e-7; %m^2 - 24 gauge (0.511 mm)
-elseif gauge == 5
+switch gauge
+    case 24
+        Ac = 8.2e-7; %m^2 - 24 gauge (0.511 mm)
+    case 5
         r = 4.621/1000;
         Ac = pi*r^2;
-elseif gauge == 10
+    case 10
         r = 2.588/1000;
         Ac = pi*r^2;
-elseif gauge == 15
+    case 15
         r = 1.45/1000;
         Ac = pi*r^2;
-elseif gauge == 20
+    case 20
         r = 0.812/1000;
         Ac = pi*r^2;
-elseif gauge == 22
+    case 22
         r = 0.644/1000;
         Ac = pi*r^2;
-elseif gauge == 26
+    case 26
         r = 0.405/1000;
         Ac = pi*r^2;
-elseif gauge == 28
+    case 28
         r = 0.321/1000;
         Ac = pi*r^2;
-elseif gauge == 30
+    case 30
         r = 0.255/1000;
         Ac = pi*r^2;
-elseif gauge == 35
+    case 35
         r = 0.143/1000;
         Ac = pi*r^2;
-elseif gauge == 40
+    case 40
         r = 0.0799/1000;
         Ac = pi*r^2;
-else % default gauge = 24
-    Ac = 8.2e-7;
+    otherwise % default gauge = 24
+        Ac = 8.2e-7;
 end
-% 
-% disp(['Acceleration: ',num2str(acceleration),' gees']);
-% disp(['Rotation Rate: ',num2str(w),' rpm']);
-% disp(['Coil turns: ',num2str(turns),' (',num2str(numcoils),' coils)']);
-% disp(['Time to spin up: ',num2str(time),' hours']);
-% disp(' ');
 
 %%
-%disp(' ----- Outputs ----- ');
-acceleration = acceleration*9.81; % m/s^2
-w = w*0.1047; %rpm to rad/s
-radius = acceleration/w^2; %m
-%disp(['Tether Radius: ',num2str(radius),' meters']);
+acceleration = acceleration*9.81;   % Acceleration (from g's to m/s^2)
+w = w*0.1047;                       % Angular speed (from rpm to rad/s)
+radius = acceleration/w^2;          % Radius (in meters)
 
 %Undeployed tether (NOT IMPORTANT STATE)-(CALC SLIGHTLY MODED)
 if prcntT == 0
@@ -143,28 +124,28 @@ if prcntT == 0
 % Deployed tether (IMPORTANT STATE)
 else
     R = (prcntT/100)*radius;
-    lend = (prcntC/100)*l; % end sat size
-    lcenter = 3*l - 2*lend; % center sat size
-    mend = (prcntC/100)*m; % end mass
-    mtether = m/4; %tether mass
-    mcenter = 3*m - 2*mend - 2*mtether; % center mass
-    Iend = (mend/12)*(l^2+lend^2); % moment of inertia end (box)
-    Iteth = (mtether)*R*R/3; %moment of inertia tether (cyclinder)
-    Icenter = (1/2)*(mcenter/12)*(l^2+lcenter^2); % moment of inertia center (box)
-    Itotal = 2*(Iend + mend*R*R + Iteth + Icenter); %total moment of inertia (parallel axis)
-    time = time*60*60;
-    torque = Itotal*w/time; %Torque
+    lend = (prcntC/100)*l;                          % End sat size
+    lcenter = 3*l - 2*lend;                         % Center sat size
+    mend = (prcntC/100)*m;                          % End mass
+    mtether = m/4;                                  % Tether mass
+    mcenter = 3*m - 2*mend - 2*mtether;             % Center mass
+    Iend = (mend/12)*(l^2+lend^2);                  % Moment of inertia end (box)
+    Iteth = (mtether)*R*R/3;                        % Moment of inertia tether (cyclinder)
+    Icenter = (1/2)*(mcenter/12)*(l^2+lcenter^2);   % Moment of inertia center (box)
+    Itotal = 2*(Iend + mend*R*R + Iteth + Icenter); % Total moment of inertia (parallel axis)
+    time = time*60*60;      % Time (from hours seconds)
+    torque = Itotal*w/time; % Torque
 end
 
 %Safety factor on torque
 torquesf = torque*sf;
 
 % Aface = l*l; %m^2
-L = l-0.02; %coil length size available 
-Lend = lend-0.02; %coil length size available end
-Lcenter = lcenter-0.02; %coil length size available center
-Aend = (Lend)*(L); % Area of end sat side
-Acenter = (Lcenter)*(L); % Area of center sat side
+L = l-0.02;                 % Coil length size available 
+Lend = lend-0.02;           % Coil length size available end
+Lcenter = lcenter-0.02;     % Coil length size available center
+Aend = (Lend)*(L);          % Area of end sat side
+Acenter = (Lcenter)*(L);    % Area of center sat side
 
 k = 100;            % Relative permeability for iron
 B_core = B*k;       % New core magnetic moment
@@ -173,43 +154,36 @@ if strcmp('yes',EndCoils)
     
     % current needed for torque with all three coils in mag field
     current = torquesf/(turns*numcoils*B_core*(Acenter+Aend+Aend));
-        %disp(['Needed current: ',num2str(current),' Amperes']);
-    lengthEnd = turns*numcoils*(2*Lend+2*L); % length of coil wire in end (meters)
-    lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
+    lengthEnd = turns*numcoils*(2*Lend+2*L);                % length of coil wire in end (meters)
+    lengthCenter = turns*numcoils*(2*Lcenter+2*L);          % length of coil wire in center (meters)
     
 elseif strcmp('no',EndCoils)
     
     % current needed for torque with one central coil in mag field
     current = torquesf/(turns*numcoils*B_core*(Acenter));
-        %disp(['Needed current: ',num2str(current),' Amperes']);
-    lengthEnd = 0; % length of coil wire in end (meters)
-    lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
+    lengthEnd = 0;                                          % length of coil wire in end (meters)
+    lengthCenter = turns*numcoils*(2*Lcenter+2*L);          % length of coil wire in center (meters)
 
 else
     % current needed for torque with all three coils in mag field
     current = torquesf/(turns*numcoils*B_core*(Acenter+Aend+Aend));
-        %disp(['Needed current: ',num2str(current),' Amperes']);
-    lengthEnd = turns*numcoils*(2*Lend+2*L); % length of coil wire in end (meters)
-    lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
+    lengthEnd = turns*numcoils*(2*Lend+2*L);                % length of coil wire in end (meters)
+    lengthCenter = turns*numcoils*(2*Lcenter+2*L);          % length of coil wire in center (meters)
 end
 
-resisEnd = p*lengthEnd/Ac; % resistance in end
-resisCenter = p*lengthCenter/Ac; % resistance in center
+resisEnd = p*lengthEnd/Ac;              % resistance in end
+resisCenter = p*lengthCenter/Ac;        % resistance in center
 
-voltageEnd = current*resisEnd; %voltage needed at end
-powerEnd = voltageEnd*current; %power draw at end
+voltageEnd = current*resisEnd;          %voltage needed at end
+powerEnd = voltageEnd*current;          %power draw at end
 
-voltageCenter = current*resisCenter; %voltage needed in center
-powerCenter = voltageCenter*current; %power draw at center
-%disp(['Power draw: ',num2str(power),' Watts']);
+voltageCenter = current*resisCenter;    %voltage needed in center
+powerCenter = voltageCenter*current;    %power draw at center
 
-massEnd = lengthEnd*Ac*Density; %mass of end sat coils
-massCenter = lengthCenter*Ac*Density; %mass of center sat coils
+massEnd = lengthEnd*Ac*Density;         %mass of end sat coils
+massCenter = lengthCenter*Ac*Density;   %mass of center sat coils
 
 massTotal = 2*massEnd + massCenter;
 MinCost = massTotal*MinCostPerkg;
-%disp(['Coil mass: ',num2str(mass),' kg']);
-
-%disp(' ');
 
 end
