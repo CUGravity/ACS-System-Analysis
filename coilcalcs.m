@@ -147,7 +147,7 @@ Lcenter = lcenter-0.02;     % Coil length size available center
 Aend = (Lend)*(L);          % Area of end sat side
 Acenter = (Lcenter)*(L);    % Area of center sat side
 
-k = 1;            % Relative permeability for iron
+k = 100;            % Relative permeability for iron
 B_core = B*k;       % New core magnetic moment
 
 if strcmp('yes',EndCoils)
