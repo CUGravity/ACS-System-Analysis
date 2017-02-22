@@ -46,19 +46,19 @@ OUTPUTS = zeros((gIterations*length(Materials)*length(Gauges)*TimeIterations*wIt
 %% Enumeration/Iterations
 
 i = 1;
-for ia = 1:gIterations; % iterate over accelerations
+for ia = 1:gIterations % iterate over accelerations
     acceleration = AccelSpan(ia);
-    for im = 1:length(Materials); % iterate over materials
+    for im = 1:length(Materials) % iterate over materials
         material = Materials(im);
-        for ig = 1:length(Gauges); % iterate over gauges
+        for ig = 1:length(Gauges) % iterate over gauges
             gauge = Gauges(ig);
-            for iti = 1:TimeIterations; % iterate over spin up times
+            for iti = 1:TimeIterations % iterate over spin up times
                 time = TimeSpan(iti);
-                for iw = 1:wIterations; % iterate over w
+                for iw = 1:wIterations % iterate over w
                     w = wSpan(iw);
-                    for itu = 1:TurnsIterations; % iterate over number of turns
+                    for itu = 1:TurnsIterations % iterate over number of turns
                         turns = TurnsSpan(itu);
-                        for ipc = 1:prcntCIterations; % iterate over percent C
+                        for ipc = 1:prcntCIterations % iterate over percent C
                             prcntC = prcntCSpan(ipc);
                             
                             [radius,torque,current,voltageEnd,...
