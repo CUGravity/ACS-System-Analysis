@@ -128,7 +128,7 @@ radius = acceleration/w^2; %m
 %disp(['Tether Radius: ',num2str(radius),' meters']);
 
 %Undeployed tether (NOT IMPORTANT STATE)-(CALC SLIGHTLY MODED)
-if prcntT == 0;
+if prcntT == 0
     lend = (prcntC/100)*l;
     lcenter = 3*l - 2*lend;
     R = lcenter/2;
@@ -166,10 +166,13 @@ Lcenter = lcenter-0.02; %coil length size available center
 Aend = (Lend)*(L); % Area of end sat side
 Acenter = (Lcenter)*(L); % Area of center sat side
 
+k = 100;            % Relative permeability for iron
+B_core = B*k;       % New core magnetic moment
+
 if strcmp('yes',EndCoils)
     
     % current needed for torque with all three coils in mag field
-    current = torquesf/(turns*numcoils*B*(Acenter+Aend+Aend));
+    current = torquesf/(turns*numcoils*B_core*(Acenter+Aend+Aend));
         %disp(['Needed current: ',num2str(current),' Amperes']);
     lengthEnd = turns*numcoils*(2*Lend+2*L); % length of coil wire in end (meters)
     lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
@@ -177,14 +180,14 @@ if strcmp('yes',EndCoils)
 elseif strcmp('no',EndCoils)
     
     % current needed for torque with one central coil in mag field
-    current = torquesf/(turns*numcoils*B*(Acenter));
+    current = torquesf/(turns*numcoils*B_core*(Acenter));
         %disp(['Needed current: ',num2str(current),' Amperes']);
     lengthEnd = 0; % length of coil wire in end (meters)
     lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
 
 else
     % current needed for torque with all three coils in mag field
-    current = torquesf/(turns*numcoils*B*(Acenter+Aend+Aend));
+    current = torquesf/(turns*numcoils*B_core*(Acenter+Aend+Aend));
         %disp(['Needed current: ',num2str(current),' Amperes']);
     lengthEnd = turns*numcoils*(2*Lend+2*L); % length of coil wire in end (meters)
     lengthCenter = turns*numcoils*(2*Lcenter+2*L); %length of coil wire in center (meters)
