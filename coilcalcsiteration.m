@@ -1,4 +1,4 @@
-function [Oall, MMP, MPP, MVP, MCostP, MVCuP] = coilcalcsiteration
+function coilcalcsiteration
 
 % Outputs to the function are:
 %   Oall    :
@@ -20,7 +20,7 @@ Materials = {'Cu', 'Nb'}; %Materials to test
 %TO TEST ONE MATERIAL ONLY
 %Materials = Materials(1) or enter string;
 
-Gauges = [20, 22, 24, 26, 28, 30, 35, 40]; %Gauges Tested
+Gauges = [24, 26, 28, 30, 35, 40]; %Gauges Tested
 sf = 1.4; %Safety Factor
 
 gmin = 0.17; %Set min g to achieve
